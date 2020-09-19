@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react'
 
 const MenuPage =()=> {
+    let amount = 0
 
     const [Food, setFood] = useState([
         {
@@ -13,7 +14,18 @@ const MenuPage =()=> {
         }
     ])
 
-    const [Order, setOrder] = useState([])
+    const [Order, setOrder] = useState([
+        {
+            food:"ข้าวเปล่า",
+            amount:1
+        },
+        {
+            food:"ข้าวกะเพราหมูสับ",
+            amount:2
+        }
+    ])
+
+    const [selected, setSelected] = useState([])
 
 
     const BuddhFood =()=>{
@@ -45,16 +57,72 @@ const MenuPage =()=> {
     }
 
     
-    const AddOrder =(item)=>{
-        console.log(item)
+    const AddOrder =(item, index)=>{
+        // console.log(item.food)
+        let tempArr = [...Order]
+        // console.log(tempArr)
+        console.log("item ที่เข้ามา", item)
         
-        setOrder([...Order, item])
+        setSelected(item.food)
 
+        tempArr.forEach((item)=>{
+            let tempArr = [...Order]
+            console.log("item forEach", item)
+            
+
+            if(item.food != selected){
+                // console.log("yes")
+
+                const Arr = {
+                    food:selected,
+                    amount:amount+1
+                    
+                    }
+                    // console.log(tempArr)
+                    setOrder([...Order, Arr])
+            }
+
+            
+        })
+
+        // let Arr = {
+        //     food:item.food,
+        //     amount:amount+1
+        // }
+        // tempArr = [...tempArr, Arr]
+        // setOrder([...Order, Arr])
+
+            // if(!tempArr.food == item.food){
+            //     console.log("yes")
+
+            //     const Arr = {
+            //         food:item.food,
+            //         amount:amount+1
+                    
+            //         }
+            //         tempArr = [...tempArr, Arr]
+            //         console.log(tempArr)
+                // setOrder([...Order, Arr])
+    
+            // } else {
+            //     console.log("no")
+                
+                
+            // }
+        
+    }
+
+    const addAmount =(item, index)=>{
+        console.log(item, index)
+        // setOrder([...Order, {amount:amount+1}])
 
     }
 
     useEffect(()=>{
-        console.table("Menu", Food)
+        console.log("Menu", Food)
+        console.log(Object.keys(Order))
+        // Order.splice()
+        
     }, [])
 
     useEffect(()=>{
@@ -98,7 +166,7 @@ const MenuPage =()=> {
                         <th>{item.price} 
                             <button className='btn btn-primary'  
                                     style={{marginRight: "-100px", marginLeft: '100px'}}
-                                    onClick={()=>AddOrder(item)}>
+                                    onClick={()=>AddOrder(item, index)}>
                             +
                             </button>
                         </th>
@@ -119,6 +187,7 @@ const MenuPage =()=> {
                     <thead class="thead-dark">
                         <tr>
                         <th scope="col">อาหาร</th>
+                        <th scope="col">จำนวน</th>
                         <th scope="col">ราคา</th>
                         </tr>
                     </thead>
@@ -128,6 +197,7 @@ const MenuPage =()=> {
                         return(
                         <tr key={index}>
                         <th>{item.food}</th>
+                        <th><button className="mx-2 btn-dark" onClick="">-</button>{item.amount}<button className="mx-2 btn-dark" onClick={()=>addAmount(item, index)}>+</button></th>
                         <th>{item.price}</th>
                         </tr>
                     )})}
