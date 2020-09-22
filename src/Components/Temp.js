@@ -17,18 +17,18 @@ const MenuPage =()=> {
     ])
 
     const [Order, setOrder] = useState([
-        // {
-        //     food:"ข้าวเปล่า",
-        //     amount:1,
-        //     price:10,
-        //     status:"Added"
-        // },
-        // {
-        //     food:"ข้าวกะเพราหมูสับ",
-        //     amount:2,
-        //     price:45,
-        //     status:"NoAdded"
-        // }
+        {
+            food:"ข้าวเปล่า",
+            amount:1,
+            price:10,
+            status:"Added"
+        },
+        {
+            food:"ข้าวกะเพราหมูสับ",
+            amount:2,
+            price:45,
+            status:"NoAdded"
+        }
     ])
     const [Orderx, setOrderx] = useState(
         {
@@ -81,19 +81,8 @@ const MenuPage =()=> {
         // console.log(item.food)
         let tempArr = [...Order]
         // console.log(tempArr)
-        let temp =[...Menu]
-        temp[index] = {...temp[index], status:"Added"}
-        // for(let i=0; i<Menu.length; i++){
-        //     console.log(Menu[i].food)
-        // }
-        console.log(index)
-        Menu.splice(index, 1)
-
-
         console.log("item ที่เข้ามา", item)
-        setOrder([...Order, {...item, amount:1} ])
-        // setMenu([...Menu, {...item, status:"Added"} ])}
-        setMenu(temp)}
+        setOrder([...Order, {...item, amount:1} ])}
 
     const AddOrderSecond =(selectedItem, index)=>{
          //console.log("ที่เลือกมา :", selectedItem, index)
@@ -267,34 +256,47 @@ const MenuPage =()=> {
         }
     }
 
-    const hopper2 =()=>{
+    const hopper2 =(item, index)=>{
         for(let i=0; i<Order.length; i++){
-            if(Order.[i].status == "NoAdded"){
-                console.log("Do if")
+            if(Order.[i].status == "NoAdded" || Order.[i] == ""){
                 return(
-                    <>
-                    <p>xxxx</p>
-                    </>
+                    <button className='btn btn-success'  
+                    style={{marginRight: "-100px", marginLeft: '100px'}}
+                    onClick={()=>AddOrderFirst(item, index)}>
+            +
+            </button>
                 )
+                
+            }
+            if(Order == []){
+                return(
+                    <p>wow</p>
+                )
+                
             }
             else{
                 return(
-                    null
-                    )
+                    <button className='btn btn-primary'  
+                    style={{marginRight: "-100px", marginLeft: '100px'}}
+                    onClick={()=>AddOrderSecond(item, index)}>
+            +
+            </button>
+                )
+
             }
-            
         }
+        
     }
 
     useEffect(()=>{
         console.log("Menu ที่มี", Menu)
-        // hopper()
-        // hopper2()
+        hopper()
+        //hopper2()
         // console.log(Object.keys(Order))
         // Order.splice()
 
         
-    }, [Menu])
+    }, [])
 
     useEffect(()=>{
         console.log("Order Total", Order)
@@ -330,7 +332,6 @@ const MenuPage =()=> {
                         <tr>
                         <th scope="col">อาหาร</th>
                         <th scope="col">ราคา</th>
-                        <th ></th>
                         </tr>
                     </thead>
                    
@@ -341,21 +342,10 @@ const MenuPage =()=> {
                         <tr key={item.food}>
                         <th>{item.food}</th>
                         <th>{item.price} 
-                        {item.status == "NoAdded"
-                            ?<button className='btn btn-success'  
-                                    style={{marginRight: "-100px", marginLeft: '100px'}}
-                                    onClick={()=>AddOrderFirst(item, index)}>
-                            +
-                            </button>
-
-                            :<button className='btn btn-primary'  
-                                    style={{marginRight: "-100px", marginLeft: '100px'}}
-                                    onClick={()=>AddOrderSecond(item, index)}>
-                            +
-                            </button>}
+                            
                             
                         
-                            {/* <button className='btn btn-success'  
+                            {/*<button className='btn btn-success'  
                                     style={{marginRight: "-100px", marginLeft: '100px'}}
                                     onClick={()=>AddOrderFirst(item, index)}>
                             +
@@ -364,16 +354,14 @@ const MenuPage =()=> {
                                     style={{marginRight: "-100px", marginLeft: '100px'}}
                                     onClick={()=>AddOrderSecond(item, index)}>
                             +
-                            </button> */}
-                            
+                            </button>*/}
+                           {hopper2(item, index)}
                             
                         </th>
-                        <th>{item.status} </th>
                         </tr>
                     )})}
                     </tbody>
                     </table>
-                    {hopper2}
                 </div>
 
                 <div className="col-4 border border-danger"  style={{height: "auto", padding: "0px"}}>
