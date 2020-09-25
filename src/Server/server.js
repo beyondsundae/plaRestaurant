@@ -40,7 +40,22 @@ app.get('/Data', (req, res)=>{
         if(err) throw err
             res.send(result)
     }
-)
-})
+)})
+
+app.get('/BuddhFood', (req, res)=>{
+    connection.query("SELECT * FROM buddh_food",function(err, result, fields){
+        if(err) throw err
+            res.send(result)
+    }
+)})
+
+
+app.get('/IslamFood', (req, res)=>{
+    connection.query("SELECT * FROM islam_food",function(err, result, fields){
+        if(err) throw err
+            res.send(result)
+    }
+)})
+
 
 module.export = app

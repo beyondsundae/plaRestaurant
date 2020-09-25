@@ -3,18 +3,18 @@ import axios from 'axios'
 
 const MenuPage =()=> {
 
+    var dateFormat = require('dateformat');
+    var now = new Date();
+    const timeStamp =  dateFormat(now, "ddd dd-mm-yyyy, HH:MM:ss")
+
     const [Menu, setMenu] = useState([])
     const [Order, setOrder] = useState([])
     const [OrderTotal, setOrdertotal] = useState(0)
 
     const [BuddhFood, setBuddhFood] = useState([])
-    const [IslamFood, setIslamFood] = useState([
-    {
-        food:"ข้าวกะเพราไก่",
-        price:45,
-        status:"NoAdded",
-        nation:"Islam"
-    }])
+    const [IslamFood, setIslamFood] = useState([])
+
+    const [tempOrder, settempOrder] = useState()
 
     const SetInitialBuddhFood =()=>{
        // let ChangeStatus =[...Menu]
@@ -47,20 +47,20 @@ const MenuPage =()=> {
         ChangeStatus[index] = {...ChangeStatus[index], status:"Added"}
         setBuddhFood(ChangeStatus)
         // ChangeBuddhFood()
-        console.log(BuddhFood)
+        //console.log(BuddhFood)
         console.log("item ที่เข้ามา", item, index)
         setOrder([...Order, {...item, amount:1} ])
-        console.log("Menu ที่มี", Menu)
+        //console.log("Menu ที่มี", Menu)
     }
     const AddIslamFirst =(item, index)=>{
         let ChangeStatus =[...IslamFood]
         ChangeStatus[index] = {...ChangeStatus[index], status:"Added"}
         setIslamFood(ChangeStatus)
         // ChangeIslamFood()
-        console.log(IslamFood)
+        //console.log(IslamFood)
         console.log("item ที่เข้ามา", item, index)
         setOrder([...Order, {...item, amount:1} ])
-        console.log("Menu ที่มี", Menu)
+        //console.log("Menu ที่มี", Menu)
     }
 
     const addAmount =(selectedItem)=>{
@@ -114,7 +114,6 @@ const MenuPage =()=> {
                 )
             }
         })
-        
 
          {/*for (let i = 0; i<hardCopy.length; i++){
              console.log(hardCopy[i].food)
@@ -202,14 +201,41 @@ const MenuPage =()=> {
         // console.log(totalVal)
         for (let i = 0; i<Order.length; i++){
             totalVal += Order[i].price * Order[i].amount
-            
         }
         console.log("Price:", totalVal)
         setOrdertotal(totalVal)
     }
 
-    const submitOrder =()=>{
+    const confirmSubmit =(e)=>{
+       
+        var txt;
+            if(Order > [] ){
+                if (window.confirm(`ต้องการ"ยืนยัน"รายการทั้งหมดใช่หรือไม่`)) {
+                    submitOrder()
+                } else {
+                    txt = "You pressed Cancel!";
+                }
+            }else{
+                alert("กรุณาเลือกรายการอาหาร")
+            }
+    }
+    const submitOrder =(e)=>{
+        
+        console.log(timeStamp)
+        let formOrder ={
+            Timestamp:timeStamp,
+            totalPrice:OrderTotal,
 
+
+        }
+        
+        axios.post("http://localhost:4000/sendOrder", formOrder)
+        .then((res)=>{
+            console.log(res)
+        })
+        .catch((err)=>{
+            console.log(err)
+        })
     }
     
     const cancelOrder =()=>{
@@ -250,7 +276,27 @@ const MenuPage =()=> {
             </button>
             )
         }
-        
+    }
+
+   
+    const readyToStore =()=>{
+        let rv = {}
+        for (let i = 0; i<Order.length; i++){
+            rv[i] = Order[i]
+            console.log(rv[i])
+            //return rv[i]
+        }
+        {/*const temp = Object.assign({}, Order)
+        console.log(temp)*/}
+       {/*for(let i = 0; i<Order.length; i++){
+            console.log(Order[i])  
+        }*/}
+       {/*const temp = Order.map((item)=>{
+           console.log({item.food:item.amount})
+           //return (item.food:item.amount)
+
+        })
+        settempOrder(temp)*/}
     }
 
 
@@ -261,12 +307,24 @@ const MenuPage =()=> {
             BuddhMenu.push(BuddhFood[i])
         }
         setMenu(BuddhMenu)
-
+        
+        axios.get('http://localhost:4000/IslamFood')
+        .then((res)=>{
+            const result = res.data
+            //console.log(result)
+            setIslamFood(result)
+        })
+        .catch((err)=>{
+            alert(err)
+        })
         axios.get('http://localhost:4000/BuddhFood')
         .then((res)=>{
             const result = res.data
-            console.log(result)
+            //console.log(result)
             setBuddhFood(result)
+        })
+        .catch((err)=>{
+            alert(err)
         })
     }, [])
 
@@ -295,7 +353,8 @@ const MenuPage =()=> {
                     <div className="col-2">
                         <button className='btn btn-info mx-2' onClick={()=>ChangeBuddhFood()}>พุทธ</button>
                         <button className='btn btn-info mx-2' onClick={()=>ChangeIslamFood()}>อิสลาม</button>
-                        {/*<button onClick={()=>console.log("Menu Total", Menu)}>refresh</button>*/}
+                        <button onClick={()=>readyToStore()/*console.log("Oreder Total", Order)*/}>readyToStore</button>
+                        <button onClick={()=>console.log(Object.assign({}, Order))}>refresh</button>
                     </div>
                     <div className="col">
                         
@@ -371,7 +430,7 @@ const MenuPage =()=> {
                             <strong>ราคารวม: {OrderTotal}</strong> <br/>
                             
                         </div>
-                        <button className="btn btn-success mt-5">สั่งอาหาร</button>
+                        <button className="btn btn-success mt-5" onClick={()=>confirmSubmit()}>สั่งอาหาร</button>
                         <button className="btn btn-danger" onClick={()=>cancelOrder()}>ยกเลิก</button>
                     </div>
                 </div>
