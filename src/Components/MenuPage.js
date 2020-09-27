@@ -14,7 +14,9 @@ const MenuPage =()=> {
     const [BuddhFood, setBuddhFood] = useState([])
     const [IslamFood, setIslamFood] = useState([])
 
-    const [tempOrder, settempOrder] = useState()
+    const [EatStatus, setEatStatus] = useState("Store")
+    const [EatColor1, setEatColor1] = useState("btn btn-primary btn-block")
+    const [EatColor2, setEatColor2] = useState("btn btn-primary btn-block")
 
     const SetInitialBuddhFood =()=>{
        // let ChangeStatus =[...Menu]
@@ -206,6 +208,17 @@ const MenuPage =()=> {
         setOrdertotal(totalVal)
     }
 
+    const EatatHome =()=>{
+        setEatStatus("Home")
+        setEatColor1("btn btn-primary btn-block")
+        setEatColor2("btn btn-secondary btn-block")
+    }
+    const EatatStore =()=>{
+        setEatStatus("Store")
+        setEatColor1("btn btn-secondary btn-block")
+        setEatColor2("btn btn-primary btn-block")
+    }
+
     const confirmSubmit =(e)=>{
        
         var txt;
@@ -220,13 +233,19 @@ const MenuPage =()=> {
             }
     }
     const submitOrder =(e)=>{
-        
         console.log(timeStamp)
+
+        var resultx = {};
+            for (var i = 0; i < Order.length; i++) {
+                resultx[Order[i].food] = Order[i].amount
+            }
+            console.log(resultx);
+
         let formOrder ={
             Timestamp:timeStamp,
             totalPrice:OrderTotal,
-
-
+            EatStatus:EatStatus,
+            ...resultx
         }
         
         axios.post("http://localhost:4000/sendOrder", formOrder)
@@ -236,6 +255,13 @@ const MenuPage =()=> {
         .catch((err)=>{
             console.log(err)
         })
+            setTimeout(()=>{
+                alert("สั่งอาหารสำเร็จ")
+                goBackALLStatus()
+                setOrder([])
+
+            }, 1000)
+        
     }
     
     const cancelOrder =()=>{
@@ -280,23 +306,38 @@ const MenuPage =()=> {
 
    
     const readyToStore =()=>{
-        let rv = {}
-        for (let i = 0; i<Order.length; i++){
-            rv[i] = Order[i]
-            console.log(rv[i])
-            //return rv[i]
-        }
-        {/*const temp = Object.assign({}, Order)
-        console.log(temp)*/}
-       {/*for(let i = 0; i<Order.length; i++){
-            console.log(Order[i])  
-        }*/}
-       {/*const temp = Order.map((item)=>{
-           console.log({item.food:item.amount})
-           //return (item.food:item.amount)
+        var resultx = {};
+            for (var i = 0; i < Order.length; i++) {
+                resultx[Order[i].food] = Order[i].amount
+            }
+            console.log(resultx);
 
+        var object = Order.reduce((obj, item) => 
+            Object.assign(obj, { [item.food]: item.amount }), {});
+            console.log(object)
+
+        var result = Order.reduce((obj,item)=>{
+            obj[item.food] = item.amount; 
+            return obj }, {});
+            console.log(result)
+
+        var result2 = Order.reduce((obj,item)=>(
+            {...obj,[item.food] : item.amount}), {});
+            console.log(result2)
+
+        let wow =Order.map((item)=>{
+            return Object.assign({ [item.food]: item.amount }) 
         })
-        settempOrder(temp)*/}
+        let wow2 = Object.assign({}, ...wow)
+            console.log(wow2)
+
+        const obj = Object.fromEntries(Order.map(item => [item.food, item.amount]));
+        console.log(obj);
+
+        const newObject = Object.assign({}, ...Order.map(item => ({ [item.food]: item.amount })));
+        console.log(newObject);
+
+        //settempOrder(temp)
     }
 
 
@@ -326,6 +367,8 @@ const MenuPage =()=> {
         .catch((err)=>{
             alert(err)
         })
+
+        EatatHome()
     }, [])
 
     useEffect(()=>{
@@ -353,8 +396,8 @@ const MenuPage =()=> {
                     <div className="col-2">
                         <button className='btn btn-info mx-2' onClick={()=>ChangeBuddhFood()}>พุทธ</button>
                         <button className='btn btn-info mx-2' onClick={()=>ChangeIslamFood()}>อิสลาม</button>
-                        <button onClick={()=>readyToStore()/*console.log("Oreder Total", Order)*/}>readyToStore</button>
-                        <button onClick={()=>console.log(Object.assign({}, Order))}>refresh</button>
+                        {/*<button onClick={()=>readyToStore()}>readyToStore</button>
+                        <button onClick={()=>console.log(Order)}>refresh</button>*/}
                     </div>
                     <div className="col">
                         
@@ -430,7 +473,16 @@ const MenuPage =()=> {
                             <strong>ราคารวม: {OrderTotal}</strong> <br/>
                             
                         </div>
-                        <button className="btn btn-success mt-5" onClick={()=>confirmSubmit()}>สั่งอาหาร</button>
+                        <div className="row ">
+                            <div className="offset-1 col-5">
+                                <button className={EatColor1} onClick={()=>EatatHome()}>สั่งกลับบ้าน</button>
+                            </div>
+                            <div className="col-5">
+                                <button className={EatColor2} onClick={()=>EatatStore()}>ทานที่ร้าน</button>
+                            </div>
+                        </div>
+                        
+                        <button className="btn btn-success" onClick={()=>confirmSubmit()}>สั่งอาหาร</button>
                         <button className="btn btn-danger" onClick={()=>cancelOrder()}>ยกเลิก</button>
                     </div>
                 </div>

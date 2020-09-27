@@ -35,27 +35,70 @@ app.get('/', (req, res) => {
     res.send("Hello 4000")
 })
 
-app.get('/Data', (req, res)=>{
-    connection.query("SELECT * FROM ordertable",function(err, result, fields){
-        if(err) throw err
-            res.send(result)
-    }
-)})
-
 app.get('/BuddhFood', (req, res)=>{
-    connection.query("SELECT * FROM buddh_food",function(err, result, fields){
-        if(err) throw err
+    connection.query("SELECT * FROM buddh_food", (err, result, fields)=>{
+        if(err){
+            throw err
+        }else{
             res.send(result)
-    }
-)})
-
-
+        }
+    })
+})
 app.get('/IslamFood', (req, res)=>{
-    connection.query("SELECT * FROM islam_food",function(err, result, fields){
-        if(err) throw err
+    connection.query("SELECT * FROM islam_food", (err, result, fields)=>{
+        if(err){
+            throw err
+        }else{
             res.send(result)
+        }
+    })
+})
+
+app.post('/sendOrder', (req, res)=>{
+    console.log("Insert Done")
+    let data = {
+        Timestamp:req.body.Timestamp,
+        totalPrice:req.body.totalPrice,
+        status:"NotDone",
+        EatStatus:req.body.EatStatus,
+        ข้าวสวย:req.body.ข้าวสวย?req.body.ข้าวสวย:0,
+        ข้าวผัดไก่:req.body.ข้าวผัดไก่?req.body.ข้าวผัดไก่:0,
+        ข้าวกะเพราไก่สับ:req.body.ข้าวกะเพราไก่สับ?req.body.ข้าวกะเพราไก่สับ:0,
+        ข้าวผัดพริกแกงไก่:req.body.ข้าวผัดพริกแกงไก่?req.body.ข้าวผัดพริกแกงไก่:0,
+        ข้าวไก่ผัดผงกะหรี่:req.body.ข้าวไก่ผัดผงกะหรี่?req.body.ข้าวไก่ผัดผงกะหรี่:0,
+        ข้าวทะเลผัดผงกะหรี่:req.body.ข้าวทะเลผัดผงกะหรี่?req.body.ข้าวทะเลผัดผงกะหรี่:0,
+        ข้าวต้มไก่:req.body.ข้าวต้มไก่?req.body.ข้าวต้มไก่:0,
+        ข้าวไข่เจียว:req.body.ข้าวไข่เจียว?req.body.ข้าวไข่เจียว:0,
+        ข้าวไก่ทอด:req.body.ข้าวไก่ทอด?req.body.ข้าวไก่ทอด:0,
+        ข้าวผัดหมู:req.body.ข้าวผัดหมู?req.body.ข้าวผัดหมู:0,
+        ข้าวกะเพราหมูสับ:req.body.ข้าวกะเพราหมูสับ?req.body.ข้าวกะเพราหมูสับ:0,
+        ข้าวผัดพริกแกงหมู:req.body.ข้าวผัดพริกแกงหมู?req.body.ข้าวผัดพริกแกงหมู:0,
+        ข้าวผัดพริกแกงหมูกรอบ:req.body.ข้าวผัดพริกแกงหมูกรอบ?req.body.ข้าวผัดพริกแกงหมูกรอบ:0,
+        ข้าวหมูผัดผงกะหรี่:req.body.ข้าวหมูผัดผงกะหรี่?req.body.ข้าวหมูผัดผงกะหรี่:0,
+        ข้าวต้มหมู:req.body.ข้าวต้มหมู?req.body.ข้าวต้มหมู:0,
+        ข้าวไข่เจียวหมูสับ:req.body.ข้าวไข่เจียวหมูสับ?req.body.ข้าวไข่เจียวหมูสับ:0
     }
-)})
+
+    let sql = "INSERT INTO ordertable SET ?"
+        connection.query(sql, data, (err, result)=>{
+            if(err){
+                throw err
+            }else{
+                console.log(result)
+            }
+        })
+})
+
+app.get('/Data', (req, res)=>{
+    connection.query("SELECT * FROM ordertable", (err, result, fields)=>{
+        if(err){
+            throw err
+        }else{
+            res.send(result)
+        }
+    }
+)
+})
 
 
 module.export = app
