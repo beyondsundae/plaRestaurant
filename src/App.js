@@ -4,11 +4,16 @@ import OrderPage from './Components/OrderPage'
 import MenuPage from './Components/MenuPage'
 import './App.css';
 
+import { BrowserRouter as HashRouter, Router, Route, Switch } from 'react-router-dom';
+
 function App() {
   return (
     <div style={{height: "100vh"}}>
-      <MenuPage/>
-      
+      <Switch>
+          <Route exact path="/" component={MenuPage} />
+          <Route exact path="/back" component={OrderPage} />
+          <Route component={MenuPage} />
+        </Switch>
     </div>
   );
 }

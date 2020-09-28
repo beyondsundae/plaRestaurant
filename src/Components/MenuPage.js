@@ -6,6 +6,7 @@ const MenuPage =()=> {
     var dateFormat = require('dateformat');
     var now = new Date();
     const timeStamp =  dateFormat(now, "ddd dd-mm-yyyy, HH:MM:ss")
+    const timeNow =  dateFormat(now, "HH:MM")
 
     const [Menu, setMenu] = useState([])
     const [Order, setOrder] = useState([])
@@ -220,7 +221,6 @@ const MenuPage =()=> {
     }
 
     const confirmSubmit =(e)=>{
-       
         var txt;
             if(Order > [] ){
                 if (window.confirm(`ต้องการ"ยืนยัน"รายการทั้งหมดใช่หรือไม่`)) {
@@ -340,7 +340,6 @@ const MenuPage =()=> {
         //settempOrder(temp)
     }
 
-
     useEffect(()=>{
         //ไม่ต้องใส่ก็ได้
         let BuddhMenu = []  
@@ -385,35 +384,44 @@ const MenuPage =()=> {
         total()
     }, [Order])
 
+    const Time =()=>{
+        return <h3>{timeNow}</h3>
+    }
+
+    setInterval(() => {
+        Time()
+    }, 1000);
+
     return (
         <div className='MenuPage'>
-            <div className="container-fluid" style={{height: "15vh"}}>
+            <div className="container-fluid" style={{height: "auto"}}>
                 <div className="row">
-                    <div className="col-12">
-                        <h1>Menu</h1>
+                    <div className="col-11">
+                        <h1>เมนูอาหาร</h1>
                     </div>
 
-                    <div className="col-2">
+                    <div className="col-11">
                         <button className='btn btn-info mx-2' onClick={()=>ChangeBuddhFood()}>พุทธ</button>
                         <button className='btn btn-info mx-2' onClick={()=>ChangeIslamFood()}>อิสลาม</button>
+                        
                         {/*<button onClick={()=>readyToStore()}>readyToStore</button>
                         <button onClick={()=>console.log(Order)}>refresh</button>*/}
                     </div>
-                    <div className="col">
-                        
+                    <div className="col-1 pb-2">
+                        {Time()}
                     </div>
+                    
                 </div>
             </div>
 
             <div className="container-fluid"  style={{height: "85vh"}}>
             <div className="row">
-                <div className="col-8 border border-danger"  style={{height: "85vh"}}>
+                <div className="col-8"  style={{height: "85vh", padding: "0px"}}>
                 <table class="table">
                     <thead class="thead-dark">
                         <tr>
                         <th scope="col">อาหาร</th>
                         <th scope="col">ราคา</th>
-                        <th></th>
                         <th></th>
                         </tr>
                     </thead>
@@ -423,22 +431,22 @@ const MenuPage =()=> {
                         return(
                         <tr key={item.food}>
                         <th>{item.food}</th>
-                        <th>{item.price} </th>
+                        <th>{item.price}.-</th>
                         <th> <ViewButton item={item} index={index}/></th>
-                        <th>{item.status} </th>
+                        {/*<th>{item.status} </th>*/}
                         </tr>
                     )})}
                     </tbody>
                     </table>
                 </div>
 
-                <div className="col-4 border border-danger"  style={{height: "auto", padding: "0px"}}>
+                <div className="col-4"  style={{height: "auto"}}>
                     <div className="card mx-auto" style={{height: "100% "}}>
                         <div className="card-header">
-                            ORDER: 
+                            รายการที่สั่ง: 
                         </div>
 
-                        <div className="card-body">
+                        <div className="card-body" style={{ padding: "5px"}}>
                         <table class="table">
                     <thead class="thead-dark">
                         <tr>
@@ -469,11 +477,18 @@ const MenuPage =()=> {
                     </table>
                         </div>
 
-                        <div className="card-footer">
-                            <strong>ราคารวม: {OrderTotal}</strong> <br/>
+                        <div className="card-footer text-right"style={{padding: "1px"}}>
+                            <div className='row' >
+                                <div className="col-9">
+                                    <strong>ราคารวม: </strong>
+                                </div>
+                                <div className="col mr-5">
+                                    <h3>{OrderTotal} .-</h3>
+                                </div>
+                            </div>
                             
                         </div>
-                        <div className="row ">
+                        <div className="row mt-2">
                             <div className="offset-1 col-5">
                                 <button className={EatColor1} onClick={()=>EatatHome()}>สั่งกลับบ้าน</button>
                             </div>
@@ -482,8 +497,8 @@ const MenuPage =()=> {
                             </div>
                         </div>
                         
-                        <button className="btn btn-success" onClick={()=>confirmSubmit()}>สั่งอาหาร</button>
-                        <button className="btn btn-danger" onClick={()=>cancelOrder()}>ยกเลิก</button>
+                        <button className="btn btn-success btn-lg mt-3" onClick={()=>confirmSubmit()}>สั่งอาหาร</button>
+                        <button className="btn btn-danger mt-3" onClick={()=>cancelOrder()}>ยกเลิก</button>
                     </div>
                 </div>
             </div>
