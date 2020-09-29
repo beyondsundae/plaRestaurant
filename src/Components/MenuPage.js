@@ -394,7 +394,7 @@ const MenuPage =()=> {
 
     return (
         <div className='MenuPage'>
-            <div className="container-fluid" style={{height: "auto"}}>
+            <div className="container-fluid" style={{height: "auto", background: "#3f7db5", color: "white"}}>
                 <div className="row">
                     <div className="col-11">
                         <h1>เมนูอาหาร</h1>
