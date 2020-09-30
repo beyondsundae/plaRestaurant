@@ -7,7 +7,8 @@ const app = express();
 
 const cors = require("cors")
 const server = http.createServer(app)
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+const { stat } = require("fs");
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended : true}))
@@ -59,7 +60,7 @@ app.post('/sendOrder', (req, res)=>{
     let data = {
         Timestamp:req.body.Timestamp,
         totalPrice:req.body.totalPrice,
-        status:"NotDone",
+        statusCook:"NotDone",
         EatStatus:req.body.EatStatus,
         ข้าวสวย:req.body.ข้าวสวย?req.body.ข้าวสวย:0,
         ข้าวผัดไก่:req.body.ข้าวผัดไก่?req.body.ข้าวผัดไก่:0,
@@ -91,6 +92,29 @@ app.post('/sendOrder', (req, res)=>{
 
 app.get('/Data', (req, res)=>{
     connection.query("SELECT * FROM ordertable", (err, result, fields)=>{
+        if(err){
+            throw err
+        }else{
+            res.send(result)
+        }
+    }
+)
+})
+
+app.put("/AcceptOrder", (req, res)=>{
+    let OrderCook = req.body.OrderCook
+    let statusCook = req.body.statusCook
+    connection.query("UPDATE ordertable SET statusCook = ? WHERE OrderCook = " + OrderCook , [statusCook], (err, result, fields)=>{
+        if(err){
+            throw err
+        }else{
+            res.send(result)
+        }
+    } )
+})
+
+app.get('/ActiveKey', (req, res)=>{
+    connection.query("SELECT orderCook FROM ordertable WHERE statusCook = 'NotDone' LIMIT 1", (err, result, fields)=>{
         if(err){
             throw err
         }else{

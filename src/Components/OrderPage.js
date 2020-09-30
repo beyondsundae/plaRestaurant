@@ -6,24 +6,43 @@ import Card from 'react-bootstrap/Card'
 
 const OrderPage =()=> {
 
+    var dateFormat = require('dateformat');
+    var now = new Date();
+    const timeStamp =  dateFormat(now, "ddd dd-mm-yyyy, HH:MM:ss")
+
     const [Data, setData] = useState([])
 
-    const getOrder =()=>{
-        axios.get('http://localhost:4000//Data')
-            .then((res)=>{
-                console.log(res)
-            })
-    }
+    const [ActiveKey, setActiveKey] = useState()
 
-    const cancelOrder =()=>{
+    const confirmOrder =(item)=>{
+        //setTime4Accept()
         if (window.confirm("ยืนยันอาหาร")) {
-            alert("เก็บข้อมูลสำเร็จ")
+            setTimeout(()=>{
+              alert("เก็บข้อมูลสำเร็จ") 
+              GetData()
+            }, 2000)
+            Accept(item) 
         } else {
            alert("รายการนี้ยกเลิก")
         }
     }
 
-    useEffect(()=>{
+    const Accept =(item)=>{
+        let Accept = {
+            OrderCook: item.OrderCook,
+            statusCook:"Done"
+        }
+
+        axios.put('http://localhost:4000/AcceptOrder', Accept)
+            .then((res)=>{
+                console.log(res)
+            })
+            .catch((err)=>{
+                console.log(err)
+            })
+    }
+
+    const GetData =()=>{
         axios.get('http://localhost:4000/Data')
         .then((res)=>{
             const data = res.data
@@ -31,31 +50,82 @@ const OrderPage =()=> {
             setData(data)
         })
 
+    }
+
+    const GetActiveKeyFunction =()=>{
+        let result ={}
+            for ( let i = 0; i < Data.length; i++) {
+                if (Data[i].statusCook == "NotDone") {
+                result = Data[i]
+                break
+            }
+            }
+            return result
+        //console.log(result.OrderCook)
+
+        // setTimeout(() => {
+            
+        // }, 3000);
+        
+        //setActiveKey(result.OrderCook)
+    }
+    
+    const keyy = GetActiveKeyFunction().OrderCook
+
+    const GetKey =()=>{
+        axios.get("http://localhost:4000/ActiveKey")
+            .then((res)=>{
+                const result = res.data
+                console.log(result)
+                setActiveKey(result)
+            })
+    }
+        
+    const ttt =()=>{
+        ActiveKey.map((item)=>{
+            console.log(item)
+
+            //return item
+        })
+    }
+
+    useEffect(()=>{
+        GetData()
+        GetKey()
+        console.log(ActiveKey)
+        ttt ()
     }, [])
 
+    setInterval(()=>{
+        GetData()
+        //GetActiveKeyFunction()
+    }, 90000)
+    
 
     return (
-        <div className="OrderPage" >
+        <div className="OrderPage" > 
             <div className='container-fluid py-2'style={{height: "auto", background: "#3f7db5", color: "white"}} >
                 <h1>Order</h1>
+                <button class="btn btn-lg btn-danger" onClick={()=>GetData()}>{GetActiveKeyFunction().OrderCook}</button>
+                <button class="btn btn-lg btn-danger" onClick={()=>console.log(ActiveKey[0].orderCook)}>{GetActiveKeyFunction().OrderCook}</button>
             </div>
 
             <div className='container-fluid mt-2' style={{height: "85vh"}}>
                 <div className="row">
                     <div className='col-5'>
-                        <h2 className="my-2">รายการอาหารที่รอทำ</h2>
-                        <Accordion defaultActiveKey={1} >
+                        <h1 className="mt-2 mb-4">รายการอาหารที่รอทำ</h1>
+                        <Accordion defaultActiveKey={ActiveKey} >
                         {Data.map((item, index)=>{
-                            //console.log(item)
+                            //console.log(item.Timestamp)
                             return(
-                                item.status === "NotDone"?
-                                (
+                                item.statusCook === "NotDone"?
+                                (   <div>
                                     <Card>
                                         <Card.Header >
                                             <Accordion.Toggle className="container-fluid " as={Button} variant="text" eventKey={index+1}>
                                                 <div className="row">
                                                     <div className="col-4" >
-                                                        <h4>รายการที่: {item.Order}</h4> 
+                                                        <h4>รายการที่: {item.OrderCook}</h4> 
                                                     </div>
                                                     <div className="col text-right">
                                                         <h4>{item.EatStatus=="Store"? "กินที่ร้าน":"สั่งกลับบ้าน"}</h4> 
@@ -66,51 +136,45 @@ const OrderPage =()=> {
                                             </Accordion.Toggle>
                                         </Card.Header>
                                         <Accordion.Collapse eventKey={index+1}>
-                                            
                                             <Card.Body>
                                                 <strong>เวลาที่สั่ง: </strong> {item.Timestamp} <br/>
-                                                
-                                                {/*<strong>ราคา: </strong> {item.totalPrice} <br/>*/}
-                                                <hr/>
+                                                    <hr/>
                                                 <strong>รายการที่สั่ง</strong><br/>
-                                                <div className="ml-3 ">
-                                                    {item.ข้าวสวย != "0"?(<h3>ข้าวสวย: {item.ข้าวสวย}<br/></h3>):null}
-                                                    {item.ข้าวผัดไก่ != "0"?(<h3>ข้าวผัดไก่: {item.ข้าวผัดไก่}<br/></h3>):null}
-                                                    {item.ข้าวกะเพราไก่สับ != "0"?(<h3>ข้าวกะเพราไก่สับ: {item.ข้าวกะเพราไก่สับ}<br/></h3>):null}
-                                                    {item.ข้าวผัดพริกแกงไก่ != "0"?(<h3>ข้าวผัดพริกแกงไก่: {item.ข้าวผัดพริกแกงไก่}<br/></h3>):null}
-                                                    {item.ข้าวไก่ผัดผงกะหรี่ != "0"?(<h3>ข้าวไก่ผัดผงกะหรี่: {item.ข้าวไก่ผัดผงกะหรี่}<br/></h3>):null}
-                                                    {item.ข้าวทะเลผัดผงกะหรี่ != "0"?(<h3>ข้าวทะเลผัดผงกะหรี่: {item.ข้าวทะเลผัดผงกะหรี่}<br/></h3>):null}
-                                                    {item.ข้าวต้มไก่ != "0"?(<h3>ข้าวต้มไก่: {item.ข้าวต้มไก่}<br/></h3>):null}
-                                                    {item.ข้าวไข่เจียว != "0"?(<h3>ข้าวไข่เจียว: {item.ข้าวไข่เจียว}<br/></h3>):null}
-                                                    {item.ข้าวไก่ทอด!= "0"?(<h3>ข้าวไก่ทอด: {item.ข้าวไก่ทอด}<br/></h3>):null}
-                                                    {item.ข้าวผัดหมู != "0"?(<h3>ข้าวผัดหมู: {item.ข้าวผัดหมู}<br/></h3>):null}
-                                                    {item.ข้าวกะเพราหมูสับ !== "0"?(<h3>ข้าวกะเพราหมูสับ: {item.ข้าวกะเพราหมูสับ}<br/></h3>):null}
-                                                    {item.ข้าวผัดพริกแกงหมู != "0"?(<h3>ข้าวผัดพริกแกงหมู: {item.ข้าวผัดพริกแกงหมู}<br/></h3>):null}
-                                                    {item.ข้าวผัดพริกแกงหมูกรอบ != "0"?(<h3>ข้าวผัดพริกแกงหมูกรอบ: {item.ข้าวผัดพริกแกงหมูกรอบ}<br/></h3>):null}
-                                                    {item.ข้าวหมูผัดผงกะหรี่ != "0"?(<h3>ข้าวหมูผัดผงกะหรี่: {item.ข้าวหมูผัดผงกะหรี่}<br/></h3>):null}
-                                                    {item.ข้าวต้มหมู != "0"?(<h3>ข้าวต้มหมู: {item.ข้าวต้มหมู}<br/></h3>):null}
-                                                    {item. ข้าวไข่เจียวหมูสับ != "0"?(<h3> ข้าวไข่เจียวหมูสับ: {item. ข้าวไข่เจียวหมูสับ}<br/></h3>):null}
-                                                </div>
-                                               
-                                                <hr/>
+                                                    <div className="ml-3 ">
+                                                        {item.ข้าวสวย != "0"?(<h3>ข้าวสวย: {item.ข้าวสวย}<br/></h3>):null}
+                                                        {item.ข้าวผัดไก่ != "0"?(<h3>ข้าวผัดไก่: {item.ข้าวผัดไก่}<br/></h3>):null}
+                                                        {item.ข้าวกะเพราไก่สับ != "0"?(<h3>ข้าวกะเพราไก่สับ: {item.ข้าวกะเพราไก่สับ}<br/></h3>):null}
+                                                        {item.ข้าวผัดพริกแกงไก่ != "0"?(<h3>ข้าวผัดพริกแกงไก่: {item.ข้าวผัดพริกแกงไก่}<br/></h3>):null}
+                                                        {item.ข้าวไก่ผัดผงกะหรี่ != "0"?(<h3>ข้าวไก่ผัดผงกะหรี่: {item.ข้าวไก่ผัดผงกะหรี่}<br/></h3>):null}
+                                                        {item.ข้าวทะเลผัดผงกะหรี่ != "0"?(<h3>ข้าวทะเลผัดผงกะหรี่: {item.ข้าวทะเลผัดผงกะหรี่}<br/></h3>):null}
+                                                        {item.ข้าวต้มไก่ != "0"?(<h3>ข้าวต้มไก่: {item.ข้าวต้มไก่}<br/></h3>):null}
+                                                        {item.ข้าวไข่เจียว != "0"?(<h3>ข้าวไข่เจียว: {item.ข้าวไข่เจียว}<br/></h3>):null}
+                                                        {item.ข้าวไก่ทอด!= "0"?(<h3>ข้าวไก่ทอด: {item.ข้าวไก่ทอด}<br/></h3>):null}
+                                                        {item.ข้าวผัดหมู != "0"?(<h3>ข้าวผัดหมู: {item.ข้าวผัดหมู}<br/></h3>):null}
+                                                        {item.ข้าวกะเพราหมูสับ != "0"?(<h3>ข้าวกะเพราหมูสับ: {item.ข้าวกะเพราหมูสับ}<br/></h3>):null}
+                                                        {item.ข้าวผัดพริกแกงหมู != "0"?(<h3>ข้าวผัดพริกแกงหมู: {item.ข้าวผัดพริกแกงหมู}<br/></h3>):null}
+                                                        {item.ข้าวผัดพริกแกงหมูกรอบ != "0"?(<h3>ข้าวผัดพริกแกงหมูกรอบ: {item.ข้าวผัดพริกแกงหมูกรอบ}<br/></h3>):null}
+                                                        {item.ข้าวหมูผัดผงกะหรี่ != "0"?(<h3>ข้าวหมูผัดผงกะหรี่: {item.ข้าวหมูผัดผงกะหรี่}<br/></h3>):null}
+                                                        {item.ข้าวต้มหมู != "0"?(<h3>ข้าวต้มหมู: {item.ข้าวต้มหมู}<br/></h3>):null}
+                                                        {item. ข้าวไข่เจียวหมูสับ != "0"?(<h3> ข้าวไข่เจียวหมูสับ: {item. ข้าวไข่เจียวหมูสับ}<br/></h3>):null}
+                                                    </div>
+                                                    <hr/>
                                                 
                                                 <div className="row">
                                                     <div className="col-8 ">
-                                                        <strong>ราคา: <h1 className="ml-3">{item.totalPrice}</h1></strong> 
+                                                        <strong>ราคา: <h1 className="ml-3">{item.totalPrice} .-</h1></strong> 
                                                     </div>
                                                     <div className="col-4 text-right">
-                                                        <button className="btn btn-info btn-lg" onClick={()=>cancelOrder()}>ตรวจสอบ</button>
+                                                        <button className="btn btn-primary btn-lg" onClick={()=>confirmOrder(item)}>ตรวจสอบ</button>
                                                     </div>
                                                 </div>
-                                                
-
                                             </Card.Body>
-                                            
                                         </Accordion.Collapse>
-                                        
                                     </Card>
+                                    </div>
                                 )
                                 :null
+                            
                             )
                         })}
                         </Accordion>
@@ -121,7 +185,6 @@ const OrderPage =()=> {
                             <div className="col pl-5 text-right">
                                 <div style={{border: "1px solid red", background: "red", height: "200vh", width: "1vh", marginLeft:"7vh"}}/>
                             </div>
-                            
                             <div className="col pr-5">
                                 <div style={{border: "1px solid red", background: "red", height: "200vh", width: "1vh"}}/>
                             </div>
@@ -129,41 +192,128 @@ const OrderPage =()=> {
                     </div>
 
                     <div className='col-5'>
-                    <h2>รายการอาหารที่ทำเสร็จเเล้ว</h2>
-                    
-                        {Data.map((item, index)=>{
-                                console.log(item)
-                                return(
-                                    item.status === "Done"?
-                                    (<div key={index}>
-                                        <div className="card mx-auto mb-3" style={{width: "95%"}}>
-                                            <div className="card-header">
-                                            ORDER: {item.Order} <br/>
-                                            TABLE: 
-                                            </div>
-
-                                            <div className="card-body">
-                                            <strong>Time: </strong> {item.Timestamp} <br/>
-                                            <strong>Price: </strong> {item.totalPrice} <br/>
-                                            <strong>Status: </strong>: {item.status} <br/>
-                                            </div>
-
-                                            <div className="card-footer text-right">
-                                                <button className="btn btn-info" onClick={()=>cancelOrder()}>ตรวจสอบ</button>
-                                            </div>
-                                            
-                                        </div>
-                                    </div>)
+                    <h1 className="my-2">รายการอาหารที่ทำเสร็จเเล้ว</h1>
+                        <Accordion>
+                            <h2 className="my-4">ช่วงเช้า<hr/></h2>
+                            {Data.map((item, index)=>{
+                                    //console.log(item)
+                                    return(
+                                        item.statusCook === "Done"?item.Timestamp.slice(16,18)<12?
+                                        (   
+                                            <Card>
+                                                <Card.Header >
+                                                    <Accordion.Toggle className="container-fluid " as={Button} variant="text" eventKey={index+1}>
+                                                        <div className="row">
+                                                            <div className="col-4" >
+                                                                <h4>รายการที่: {item.OrderCook}</h4> 
+                                                            </div>
+                                                            <div className="col text-right">
+                                                                <h4>{item.EatStatus=="Store"? "กินที่ร้าน":"สั่งกลับบ้าน"}</h4> 
+                                                            </div>
+                                                        </div>
+                                                        
+                                                    </Accordion.Toggle>
+                                                </Card.Header>
+                                                <Accordion.Collapse eventKey={index+1}>
+                                                    <Card.Body>
+                                                        <strong>เวลาที่สั่ง: </strong> {item.Timestamp} <br/>
+                                                            <hr/>
+                                                        <strong>รายการที่สั่ง</strong><br/>
+                                                            <div className="ml-3 ">
+                                                                {item.ข้าวสวย != "0"?(<h3>ข้าวสวย: {item.ข้าวสวย}<br/></h3>):null}
+                                                                {item.ข้าวผัดไก่ != "0"?(<h3>ข้าวผัดไก่: {item.ข้าวผัดไก่}<br/></h3>):null}
+                                                                {item.ข้าวกะเพราไก่สับ != "0"?(<h3>ข้าวกะเพราไก่สับ: {item.ข้าวกะเพราไก่สับ}<br/></h3>):null}
+                                                                {item.ข้าวผัดพริกแกงไก่ != "0"?(<h3>ข้าวผัดพริกแกงไก่: {item.ข้าวผัดพริกแกงไก่}<br/></h3>):null}
+                                                                {item.ข้าวไก่ผัดผงกะหรี่ != "0"?(<h3>ข้าวไก่ผัดผงกะหรี่: {item.ข้าวไก่ผัดผงกะหรี่}<br/></h3>):null}
+                                                                {item.ข้าวทะเลผัดผงกะหรี่ != "0"?(<h3>ข้าวทะเลผัดผงกะหรี่: {item.ข้าวทะเลผัดผงกะหรี่}<br/></h3>):null}
+                                                                {item.ข้าวต้มไก่ != "0"?(<h3>ข้าวต้มไก่: {item.ข้าวต้มไก่}<br/></h3>):null}
+                                                                {item.ข้าวไข่เจียว != "0"?(<h3>ข้าวไข่เจียว: {item.ข้าวไข่เจียว}<br/></h3>):null}
+                                                                {item.ข้าวไก่ทอด!= "0"?(<h3>ข้าวไก่ทอด: {item.ข้าวไก่ทอด}<br/></h3>):null}
+                                                                {item.ข้าวผัดหมู != "0"?(<h3>ข้าวผัดหมู: {item.ข้าวผัดหมู}<br/></h3>):null}
+                                                                {item.ข้าวกะเพราหมูสับ != "0"?(<h3>ข้าวกะเพราหมูสับ: {item.ข้าวกะเพราหมูสับ}<br/></h3>):null}
+                                                                {item.ข้าวผัดพริกแกงหมู != "0"?(<h3>ข้าวผัดพริกแกงหมู: {item.ข้าวผัดพริกแกงหมู}<br/></h3>):null}
+                                                                {item.ข้าวผัดพริกแกงหมูกรอบ != "0"?(<h3>ข้าวผัดพริกแกงหมูกรอบ: {item.ข้าวผัดพริกแกงหมูกรอบ}<br/></h3>):null}
+                                                                {item.ข้าวหมูผัดผงกะหรี่ != "0"?(<h3>ข้าวหมูผัดผงกะหรี่: {item.ข้าวหมูผัดผงกะหรี่}<br/></h3>):null}
+                                                                {item.ข้าวต้มหมู != "0"?(<h3>ข้าวต้มหมู: {item.ข้าวต้มหมู}<br/></h3>):null}
+                                                                {item. ข้าวไข่เจียวหมูสับ != "0"?(<h3> ข้าวไข่เจียวหมูสับ: {item. ข้าวไข่เจียวหมูสับ}<br/></h3>):null}
+                                                            </div>
+                                                            <hr/>
+                                                        
+                                                        <div className="row">
+                                                            <div className="col-8 ">
+                                                                <strong>ราคา: <h1 className="ml-3">{item.totalPrice} .-</h1></strong> 
+                                                            </div>
+                                                        </div>
+                                                    </Card.Body>
+                                                </Accordion.Collapse>
+                                            </Card>
+                                        )
+                                        :null
                                     :null
-                                )
-                            })}
-                    
+                                    )})}
+
+                            <h2 className="my-4">ช่วงหลังเที่ยง<hr/></h2>
+                            {Data.map((item, index)=>{
+                                    //console.log(item)
+                                    return(
+                                        item.statusCook === "Done"?item.Timestamp.slice(16,18)>12?
+                                        (   
+                                            <Card>
+                                                <Card.Header >
+                                                    <Accordion.Toggle className="container-fluid " as={Button} variant="text" eventKey={index+1}>
+                                                        <div className="row">
+                                                            <div className="col-4" >
+                                                                <h4>รายการที่: {item.OrderCook}</h4> 
+                                                            </div>
+                                                            <div className="col text-right">
+                                                                <h4>{item.EatStatus=="Store"? "กินที่ร้าน":"สั่งกลับบ้าน"}</h4> 
+                                                            </div>
+                                                        </div>
+                                                        
+                                                    </Accordion.Toggle>
+                                                </Card.Header>
+                                                <Accordion.Collapse eventKey={index+1}>
+                                                    <Card.Body>
+                                                        <strong>เวลาที่สั่ง: </strong> {item.Timestamp} <br/>
+                                                            <hr/>
+                                                        <strong>รายการที่สั่ง</strong><br/>
+                                                            <div className="ml-3 ">
+                                                                {item.ข้าวสวย != "0"?(<h3>ข้าวสวย: {item.ข้าวสวย}<br/></h3>):null}
+                                                                {item.ข้าวผัดไก่ != "0"?(<h3>ข้าวผัดไก่: {item.ข้าวผัดไก่}<br/></h3>):null}
+                                                                {item.ข้าวกะเพราไก่สับ != "0"?(<h3>ข้าวกะเพราไก่สับ: {item.ข้าวกะเพราไก่สับ}<br/></h3>):null}
+                                                                {item.ข้าวผัดพริกแกงไก่ != "0"?(<h3>ข้าวผัดพริกแกงไก่: {item.ข้าวผัดพริกแกงไก่}<br/></h3>):null}
+                                                                {item.ข้าวไก่ผัดผงกะหรี่ != "0"?(<h3>ข้าวไก่ผัดผงกะหรี่: {item.ข้าวไก่ผัดผงกะหรี่}<br/></h3>):null}
+                                                                {item.ข้าวทะเลผัดผงกะหรี่ != "0"?(<h3>ข้าวทะเลผัดผงกะหรี่: {item.ข้าวทะเลผัดผงกะหรี่}<br/></h3>):null}
+                                                                {item.ข้าวต้มไก่ != "0"?(<h3>ข้าวต้มไก่: {item.ข้าวต้มไก่}<br/></h3>):null}
+                                                                {item.ข้าวไข่เจียว != "0"?(<h3>ข้าวไข่เจียว: {item.ข้าวไข่เจียว}<br/></h3>):null}
+                                                                {item.ข้าวไก่ทอด!= "0"?(<h3>ข้าวไก่ทอด: {item.ข้าวไก่ทอด}<br/></h3>):null}
+                                                                {item.ข้าวผัดหมู != "0"?(<h3>ข้าวผัดหมู: {item.ข้าวผัดหมู}<br/></h3>):null}
+                                                                {item.ข้าวกะเพราหมูสับ != "0"?(<h3>ข้าวกะเพราหมูสับ: {item.ข้าวกะเพราหมูสับ}<br/></h3>):null}
+                                                                {item.ข้าวผัดพริกแกงหมู != "0"?(<h3>ข้าวผัดพริกแกงหมู: {item.ข้าวผัดพริกแกงหมู}<br/></h3>):null}
+                                                                {item.ข้าวผัดพริกแกงหมูกรอบ != "0"?(<h3>ข้าวผัดพริกแกงหมูกรอบ: {item.ข้าวผัดพริกแกงหมูกรอบ}<br/></h3>):null}
+                                                                {item.ข้าวหมูผัดผงกะหรี่ != "0"?(<h3>ข้าวหมูผัดผงกะหรี่: {item.ข้าวหมูผัดผงกะหรี่}<br/></h3>):null}
+                                                                {item.ข้าวต้มหมู != "0"?(<h3>ข้าวต้มหมู: {item.ข้าวต้มหมู}<br/></h3>):null}
+                                                                {item. ข้าวไข่เจียวหมูสับ != "0"?(<h3> ข้าวไข่เจียวหมูสับ: {item. ข้าวไข่เจียวหมูสับ}<br/></h3>):null}
+                                                            </div>
+                                                            <hr/>
+                                                        
+                                                        <div className="row">
+                                                            <div className="col-8 ">
+                                                                <strong>ราคา: <h1 className="ml-3">{item.totalPrice} .-</h1></strong> 
+                                                            </div>
+                                                        </div>
+                                                    </Card.Body>
+                                                </Accordion.Collapse>
+                                            </Card>
+                                        )
+                                        :null
+                                    :null
+                                    )
+                                })}
+                    </Accordion>
                     </div>
                 </div>
             </div>
-            
-                
-            
         </div>
     )
 }
