@@ -4,11 +4,17 @@ import Accordion from 'react-bootstrap/Accordion'
 import Button from 'react-bootstrap/Button'
 import Card from 'react-bootstrap/Card'
 
+
 const OrderPage =()=> {
 
     var dateFormat = require('dateformat');
     var now = new Date();
     const timeStamp =  dateFormat(now, "ddd dd-mm-yyyy, HH:MM:ss")
+
+    const LockPic = "https://images.vexels.com/media/users/3/132074/isolated/preview/0117cb0129593faa02646a8277ca80e3-security-lock-icon-by-vexels.png"
+
+    const [Auth, setAuth] = useState(false)
+    const [PIN, setPIN] = useState()
 
     const [Data, setData] = useState([])
 
@@ -80,7 +86,7 @@ const OrderPage =()=> {
                 setActiveKey(result)
             })
     }
-        
+    
     const ttt =()=>{
         ActiveKey.map((item)=>{
             console.log(item)
@@ -89,32 +95,67 @@ const OrderPage =()=> {
         })
     }
 
+    const EnterPIN =(e)=>{
+        //console.log(e.target.value)
+        setPIN(e.target.value)
+
+    }
+
     useEffect(()=>{
         GetData()
         GetKey()
         console.log(ActiveKey)
-        ttt ()
+        //ttt ()
     }, [])
+
+    useEffect(()=>{
+        if(PIN == "1234"){
+            setAuth(true)
+        }
+    }, [PIN])
 
     setInterval(()=>{
         GetData()
         //GetActiveKeyFunction()
-    }, 90000)
+    }, 600000)
     
 
     return (
-        <div className="OrderPage" > 
+        
+        (<div className="OrderPage" > 
             <div className='container-fluid py-2'style={{height: "auto", background: "#3f7db5", color: "white"}} >
                 <h1>Order</h1>
-                <button class="btn btn-lg btn-danger" onClick={()=>GetData()}>{GetActiveKeyFunction().OrderCook}</button>
-                <button class="btn btn-lg btn-danger" onClick={()=>console.log(ActiveKey[0].orderCook)}>{GetActiveKeyFunction().OrderCook}</button>
             </div>
 
-            <div className='container-fluid mt-2' style={{height: "85vh"}}>
+            {Auth==false?
+            (<div className='container-fluid mt-2 text-center' style={{height: "85vh"}}>
+                <img src={LockPic} style={{ marginTop: "1%" }}/>
+
+              
+                    
+                        {/*<label for="exampleInputPassword1">Password</label>*/}
+                        <p>ใส่รหัส PIN</p>
+                        <input 
+                            type="password" 
+                            class="form-control" 
+                            onChange={(e)=>EnterPIN(e)} 
+                            maxlength="4"
+                            placeholder="****" 
+                            style={{width: "20%"}}/>
+                        {/*<button type="submit" class="btn btn-primary">Submit</button>*/}
+                    
+                    
+            
+                
+                
+                    
+                {/*<button onClick={()=>setAuth(true)}>wow</button>*/}
+            </div>)
+            :(<div className='container-fluid mt-2' style={{height: "85vh"}}>
                 <div className="row">
                     <div className='col-5'>
                         <h1 className="mt-2 mb-4">รายการอาหารที่รอทำ</h1>
-                        <Accordion defaultActiveKey={ActiveKey} >
+                        <Accordion defaultActiveKey={0} >
                         {Data.map((item, index)=>{
                             //console.log(item.Timestamp)
                             return(
@@ -174,7 +215,6 @@ const OrderPage =()=> {
                                     </div>
                                 )
                                 :null
-                            
                             )
                         })}
                         </Accordion>
@@ -313,8 +353,8 @@ const OrderPage =()=> {
                     </Accordion>
                     </div>
                 </div>
-            </div>
-        </div>
+            </div>)}
+        </div>)
     )
 }
 
