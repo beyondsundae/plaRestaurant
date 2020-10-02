@@ -129,7 +129,7 @@ const OrderPage =()=> {
 
             {Auth==false?
             (<div className='container-fluid mt-2 text-center' style={{height: "85vh"}}>
-                <img src={LockPic} style={{ marginTop: "1%" }}/>
+                <img src={LockPic} style={{ marginTop: "1%" }}/><br/>
 
               
                     
@@ -137,19 +137,11 @@ const OrderPage =()=> {
                         <p>ใส่รหัส PIN</p>
                         <input 
                             type="password" 
-                            class="form-control" 
+                            autoFocus
                             onChange={(e)=>EnterPIN(e)} 
                             maxlength="4"
                             placeholder="****" 
-                            style={{width: "20%"}}/>
-                        {/*<button type="submit" class="btn btn-primary">Submit</button>*/}
-                    
-                    
-            
-                
-                
-                    
-                {/*<button onClick={()=>setAuth(true)}>wow</button>*/}
+                            style={{width: "10%", height: "10%", border: "5px solid gray", borderRadius: "10%", fontSize:"90px"}}/>
             </div>)
             :(<div className='container-fluid mt-2' style={{height: "85vh"}}>
                 <div className="row">
@@ -166,7 +158,7 @@ const OrderPage =()=> {
                                             <Accordion.Toggle className="container-fluid " as={Button} variant="text" eventKey={index+1}>
                                                 <div className="row">
                                                     <div className="col-4" >
-                                                        <h4>รายการที่: {item.OrderCook}</h4> 
+                                                        <h4>โต๊ะที่: {item.TableNumber}</h4> 
                                                     </div>
                                                     <div className="col text-right">
                                                         <h4>{item.EatStatus=="Store"? "กินที่ร้าน":"สั่งกลับบ้าน"}</h4> 
@@ -245,7 +237,7 @@ const OrderPage =()=> {
                                                     <Accordion.Toggle className="container-fluid " as={Button} variant="text" eventKey={index+1}>
                                                         <div className="row">
                                                             <div className="col-4" >
-                                                                <h4>รายการที่: {item.OrderCook}</h4> 
+                                                                <h4>โต๊ะที่: {item.TableNumber}</h4> 
                                                             </div>
                                                             <div className="col text-right">
                                                                 <h4>{item.EatStatus=="Store"? "กินที่ร้าน":"สั่งกลับบ้าน"}</h4> 
@@ -303,7 +295,7 @@ const OrderPage =()=> {
                                                     <Accordion.Toggle className="container-fluid " as={Button} variant="text" eventKey={index+1}>
                                                         <div className="row">
                                                             <div className="col-4" >
-                                                                <h4>รายการที่: {item.OrderCook}</h4> 
+                                                                <h4>โต๊ะที่: {item.TableNumber}</h4> 
                                                             </div>
                                                             <div className="col text-right">
                                                                 <h4>{item.EatStatus=="Store"? "กินที่ร้าน":"สั่งกลับบ้าน"}</h4> 

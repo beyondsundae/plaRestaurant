@@ -1,16 +1,21 @@
 import React, {useState, useEffect} from 'react'
 import axios from 'axios'
+import Card from 'react-bootstrap/Card'
 
-const MenuPage =()=> {
+const MenuPage =(props)=> {
 
     var dateFormat = require('dateformat');
     var now = new Date();
     const timeStamp =  dateFormat(now, "ddd dd-mm-yyyy, HH:MM:ss")
     const timeNow =  dateFormat(now, "HH:MM")
 
+    const [Page, setPage] = useState("first")
+
     const [Menu, setMenu] = useState([])
     const [Order, setOrder] = useState([])
     const [OrderTotal, setOrdertotal] = useState(0)
+
+    const [DataOrder, setDataOrder] = useState([])
 
     const [BuddhFood, setBuddhFood] = useState([])
     const [IslamFood, setIslamFood] = useState([])
@@ -18,6 +23,17 @@ const MenuPage =()=> {
     const [EatStatus, setEatStatus] = useState("Store")
     const [EatColor1, setEatColor1] = useState("btn btn-primary btn-block")
     const [EatColor2, setEatColor2] = useState("btn btn-primary btn-block")
+
+    const GetData =()=>{
+        axios.get('http://localhost:4000/Data')
+        .then((res)=>{
+            const result = res.data
+            setDataOrder(result)
+        })
+        .catch((err)=>{
+            alert(err)
+        })
+    }
 
     const SetInitialBuddhFood =()=>{
        // let ChangeStatus =[...Menu]
@@ -185,15 +201,15 @@ const MenuPage =()=> {
         //let ChangeBuddhStatus =[...BuddhFood]
         //ChangeBuddhStatus = {...ChangeBuddhStatus, status:"NoAdded"}
 
-        const ClearALLBuddh = BuddhFood.map((list, index)=>{
-                return({...list, status:"NoAdded"})
-        })
-        setBuddhFood(ClearALLBuddh)
-        
         const ClearALLIslam = IslamFood.map((list, index)=>{
             return({...list, status:"NoAdded"})
         })
         setIslamFood(ClearALLIslam)
+
+        const ClearALLBuddh = BuddhFood.map((list, index)=>{
+                return({...list, status:"NoAdded"})
+        })
+        setBuddhFood(ClearALLBuddh)
     }
 
     const total =()=>{
@@ -235,17 +251,19 @@ const MenuPage =()=> {
     const submitOrder =(e)=>{
         console.log(timeStamp)
 
-        var resultx = {};
+        var OrderNow = {};
             for (var i = 0; i < Order.length; i++) {
-                resultx[Order[i].food] = Order[i].amount
+                OrderNow[Order[i].food] = Order[i].amount
+                //Combine whole order to one object
             }
-            console.log(resultx);
+            console.log(OrderNow);
 
         let formOrder ={
             Timestamp:timeStamp,
+            TableNumber:props.TableNumber,
             totalPrice:OrderTotal,
             EatStatus:EatStatus,
-            ...resultx
+            ...OrderNow
         }
         
         axios.post("http://localhost:4000/sendOrder", formOrder)
@@ -259,9 +277,9 @@ const MenuPage =()=> {
                 alert("สั่งอาหารสำเร็จ")
                 goBackALLStatus()
                 setOrder([])
-
+                GetData()
+                setPage("second")
             }, 1000)
-        
     }
     
     const cancelOrder =()=>{
@@ -340,6 +358,10 @@ const MenuPage =()=> {
         //settempOrder(temp)
     }
 
+    const cancelorder =()=>{
+        alert(props.TableNumber)
+    }
+
     useEffect(()=>{
         //ไม่ต้องใส่ก็ได้
         let BuddhMenu = []  
@@ -367,7 +389,11 @@ const MenuPage =()=> {
             alert(err)
         })
 
-        EatatHome()
+        EatatStore()
+        GetData()
+        
+
+        
     }, [])
 
     useEffect(()=>{
@@ -388,121 +414,226 @@ const MenuPage =()=> {
         return <h3>{timeNow}</h3>
     }
 
-    setInterval(() => {
-        Time()
-    }, 1000);
 
     return (
         <div className='MenuPage'>
-            <div className="container-fluid" style={{height: "auto", background: "#3f7db5", color: "white"}}>
-                <div className="row">
-                    <div className="col-11">
-                        <h1>เมนูอาหาร</h1>
-                    </div>
-
-                    <div className="col-11">
-                        <button className='btn btn-info mx-2' onClick={()=>ChangeBuddhFood()}>พุทธ</button>
-                        <button className='btn btn-info mx-2' onClick={()=>ChangeIslamFood()}>อิสลาม</button>
-                        
-                        {/*<button onClick={()=>readyToStore()}>readyToStore</button>
-                        <button onClick={()=>console.log(Order)}>refresh</button>*/}
-                    </div>
-                    <div className="col-1 pb-2">
-                        {Time()}
-                    </div>
-                    
-                </div>
-            </div>
-
-            <div className="container-fluid"  style={{height: "85vh"}}>
-            <div className="row">
-                <div className="col-8"  style={{height: "85vh", padding: "0px"}}>
-                <table class="table">
-                    <thead class="thead-dark">
-                        <tr>
-                        <th scope="col">อาหาร</th>
-                        <th scope="col">ราคา</th>
-                        <th></th>
-                        </tr>
-                    </thead>
-                   
-                    <tbody>
-                    {Menu.map((item, index)=>{
-                        return(
-                        <tr key={item.food}>
-                        <th>{item.food}</th>
-                        <th>{item.price}.-</th>
-                        <th> <ViewButton item={item} index={index}/></th>
-                        {/*<th>{item.status} </th>*/}
-                        </tr>
-                    )})}
-                    </tbody>
-                    </table>
-                </div>
-
-                <div className="col-4"  style={{height: "auto"}}>
-                    <div className="card mx-auto" style={{height: "100% "}}>
-                        <div className="card-header">
-                            รายการที่สั่ง: 
+            {Page == "first"?
+            (<>
+                <div className="container-fluid" style={{height: "auto", background: "#3f7db5", color: "white"}}>
+                    <div className="row">
+                        <div className="col-10 pt-2">
+                            <h1>เมนูอาหาร โต๊ะที่ {props.TableNumber}</h1>
                         </div>
 
-                        <div className="card-body" style={{ padding: "5px"}}>
-                        <table class="table">
-                    <thead class="thead-dark">
-                        <tr>
-                        <th scope="col">อาหาร</th>
-                        <th scope="col">จำนวน</th>
-                        <th scope="col">ราคา</th>
-                        <th></th>
-                        {/*<th></th>*/}
-                        </tr>
-                    </thead>
-                   
-                    <tbody>
-                    {Order.map((item, index)=>{
-                        return(
-                        <tr key={index}>
-                        <th>{item.food}</th>
-                        <th>
-                            <button className="mx-2 btn-dark" onClick={()=>minusAmount(item, index)}>-</button>
-                                {item.amount}
-                            <button className="mx-2 btn-dark" onClick={()=>addAmount(item, index)}>+</button></th>
-                        <th>{item.price * item.amount} </th>
-                        <th><button className="btn-dark ml-2" onClick={()=>removeOrder(item, index)}>ล้าง</button></th>
-                        {/*<th><button className="btn-success ml-2" onClick={()=>goBackBuddhStatus(item, index)}>x</button>
-                        <button className="btn-danger ml-2" onClick={()=>goBackIslamStatus(item, index)}>x</button></th>*/}
-                        </tr>
-                    )})}
-                    </tbody>
-                    </table>
-                        </div>
-
-                        <div className="card-footer text-right"style={{padding: "1px"}}>
-                            <div className='row' >
-                                <div className="col-9">
-                                    <strong>ราคารวม: </strong>
+                        <div className="col-2 pt-1">
+                            <div className="card shadow mx-3" onClick={()=>setPage("second")} style={{height: "90%", cursor: "pointer", color: "black"}}>
+                                <div className= 'card-body'>
+                                     <h3>ดูรายการที่สั่ง</h3>
                                 </div>
-                                <div className="col mr-5">
-                                    <h3>{OrderTotal} .-</h3>
-                                </div>
+                             
                             </div>
+                        </div>
+
+                        <div className="col-11">
+                            <button className='btn btn-info mx-2' onClick={()=>ChangeBuddhFood()}>พุทธ</button>
+                            <button className='btn btn-info mx-2' onClick={()=>ChangeIslamFood()}>อิสลาม</button>
+                        </div>
+                        
+                        <div className="col-1 pb-2">
+                            {Time()}
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <div className="container-fluid"  style={{height: "85vh"}}>
+                    <div className="row">
+                        <div className="col-8"  style={{height: "85vh", padding: "0px"}}>
+                        <table class="table">
+                            <thead class="thead-dark">
+                                <tr>
+                                <th scope="col">อาหาร</th>
+                                <th scope="col">ราคา</th>
+                                <th></th>
+                                </tr>
+                            </thead>
+                        
+                            <tbody>
+                            {Menu.map((item, index)=>{
+                                return(
+                                <tr key={item.food}>
+                                <th>{item.food}</th>
+                                <th>{item.price}.-</th>
+                                <th> <ViewButton item={item} index={index}/></th>
+                                {/*<th>{item.status} </th>*/}
+                                </tr>
+                            )})}
+                            </tbody>
+                            </table>
+                        </div>
+
+                        <div className="col-4"  style={{height: "auto"}}>
+                            <div className="card mx-auto" style={{height: "100% "}}>
+                                <div className="card-header">
+                                    รายการที่สั่ง: 
+                                </div>
+
+                                <div className="card-body" style={{ padding: "5px"}}>
+                                <table class="table">
+                            <thead class="thead-dark">
+                                <tr>
+                                <th scope="col">อาหาร</th>
+                                <th scope="col">จำนวน</th>
+                                <th scope="col">ราคา</th>
+                                <th></th>
+                                {/*<th></th>*/}
+                                </tr>
+                            </thead>
+                        
+                            <tbody>
+                            {Order.map((item, index)=>{
+                                return(
+                                <tr key={index}>
+                                <th>{item.food}</th>
+                                <th>
+                                    <button className="mx-2 btn-dark" onClick={()=>minusAmount(item, index)}>-</button>
+                                        {item.amount}
+                                    <button className="mx-2 btn-dark" onClick={()=>addAmount(item, index)}>+</button></th>
+                                <th>{item.price * item.amount} </th>
+                                <th><button className="btn-dark ml-2" onClick={()=>removeOrder(item, index)}>ล้าง</button></th>
+                                {/*<th><button className="btn-success ml-2" onClick={()=>goBackBuddhStatus(item, index)}>x</button>
+                                <button className="btn-danger ml-2" onClick={()=>goBackIslamStatus(item, index)}>x</button></th>*/}
+                                </tr>
+                            )})}
+                            </tbody>
+                            </table>
+                                </div>
+
+                                <div className="card-footer text-right"style={{padding: "1px"}}>
+                                    <div className='row' >
+                                        <div className="col-9">
+                                            <strong>ราคารวม: </strong>
+                                        </div>
+                                        <div className="col mr-5">
+                                            <h3>{OrderTotal} .-</h3>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                                <div className="row mt-2">
+                                    <div className="offset-1 col-5">
+                                        <button className={EatColor2} onClick={()=>EatatStore()}>ทานที่ร้าน</button>
+                                    </div>
+                                    <div className="col-5">
+                                        <button className={EatColor1} onClick={()=>EatatHome()}>สั่งกลับบ้าน</button>
+                                    </div>
+                                </div>
+                                
+                                <button className="btn btn-success btn-lg mt-3" onClick={()=>confirmSubmit()}>สั่งอาหาร</button>
+                                <button className="btn btn-danger mt-3" onClick={()=>cancelOrder()}>ยกเลิก</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </>)
+            :(<>
+                <div className="container-fluid" style={{height: "auto", background: "#3f7db5", color: "white"}}>
+                    <div className="row">
+                        <div className="col-10 pt-2">
+                            <h1>รายการอาหารที่สั่ง</h1>
+                        </div>
+
+                        <div className="col-2 pt-1">
+                            <div className="card shadow mx-2" onClick={()=>setPage("first")} style={{height: "90%", cursor: "pointer", color: "black"}}>
+                                <div className= 'card-body'>
+                                     <h3>กลับไปหน้าเมนู</h3>
+                                </div>
+                             
+                            </div>
+                        </div>
+                        
+                        <div className="col-11 pb-2">
                             
                         </div>
-                        <div className="row mt-2">
-                            <div className="offset-1 col-5">
-                                <button className={EatColor1} onClick={()=>EatatHome()}>สั่งกลับบ้าน</button>
-                            </div>
-                            <div className="col-5">
-                                <button className={EatColor2} onClick={()=>EatatStore()}>ทานที่ร้าน</button>
-                            </div>
+                        <div className="col-1">
+                            {Time()}
                         </div>
                         
-                        <button className="btn btn-success btn-lg mt-3" onClick={()=>confirmSubmit()}>สั่งอาหาร</button>
-                        <button className="btn btn-danger mt-3" onClick={()=>cancelOrder()}>ยกเลิก</button>
                     </div>
                 </div>
-            </div>
-            </div>
+
+                <div className="container-fluid"  style={{height: "85vh", background: 'rgb(239, 244, 222)'}}>
+                    <div className="row mt-2">
+                        <div className="col">
+                            <img src="https://cdn.dribbble.com/users/572419/screenshots/4646056/drr.gif"/>
+                        </div>
+                        <div className="col">
+                            <div className="card shadow mx-2" onClick={()=>setPage("first")} style={{cursor: "pointer", color: "black"}}>
+                                <div className= 'card-body'>
+                                    {DataOrder.map((item, idex)=>{
+                                        return(
+                                            item.statusCook === "NotDone"?
+                                                item.TableNumber == props.TableNumber?
+                                            (<div>
+                                                <Card>
+                                                    <Card.Header >
+                                                            <div className="row">
+                                                                <div className="col-4" >
+                                                                    <h4>โต๊ะที่: {item.TableNumber}</h4> 
+                                                                </div>
+                                                                <div className="col text-right">
+                                                                    <h4>{item.EatStatus=="Store"? "กินที่ร้าน":"สั่งกลับบ้าน"}</h4> 
+                                                                </div>
+                                                                
+                                                            </div>
+                                                            
+                                                    </Card.Header>
+                                                        <Card.Body>
+                                                            <strong>เวลาที่สั่ง: </strong> {item.Timestamp} <br/>
+                                                                <hr/>
+                                                            <strong>รายการที่สั่ง</strong><br/>
+                                                                <div className="ml-3 ">
+                                                                    {item.ข้าวสวย != "0"?(<h3>ข้าวสวย: {item.ข้าวสวย}<br/></h3>):null}
+                                                                    {item.ข้าวผัดไก่ != "0"?(<h3>ข้าวผัดไก่: {item.ข้าวผัดไก่}<br/></h3>):null}
+                                                                    {item.ข้าวกะเพราไก่สับ != "0"?(<h3>ข้าวกะเพราไก่สับ: {item.ข้าวกะเพราไก่สับ}<br/></h3>):null}
+                                                                    {item.ข้าวผัดพริกแกงไก่ != "0"?(<h3>ข้าวผัดพริกแกงไก่: {item.ข้าวผัดพริกแกงไก่}<br/></h3>):null}
+                                                                    {item.ข้าวไก่ผัดผงกะหรี่ != "0"?(<h3>ข้าวไก่ผัดผงกะหรี่: {item.ข้าวไก่ผัดผงกะหรี่}<br/></h3>):null}
+                                                                    {item.ข้าวทะเลผัดผงกะหรี่ != "0"?(<h3>ข้าวทะเลผัดผงกะหรี่: {item.ข้าวทะเลผัดผงกะหรี่}<br/></h3>):null}
+                                                                    {item.ข้าวต้มไก่ != "0"?(<h3>ข้าวต้มไก่: {item.ข้าวต้มไก่}<br/></h3>):null}
+                                                                    {item.ข้าวไข่เจียว != "0"?(<h3>ข้าวไข่เจียว: {item.ข้าวไข่เจียว}<br/></h3>):null}
+                                                                    {item.ข้าวไก่ทอด!= "0"?(<h3>ข้าวไก่ทอด: {item.ข้าวไก่ทอด}<br/></h3>):null}
+                                                                    {item.ข้าวผัดหมู != "0"?(<h3>ข้าวผัดหมู: {item.ข้าวผัดหมู}<br/></h3>):null}
+                                                                    {item.ข้าวกะเพราหมูสับ != "0"?(<h3>ข้าวกะเพราหมูสับ: {item.ข้าวกะเพราหมูสับ}<br/></h3>):null}
+                                                                    {item.ข้าวผัดพริกแกงหมู != "0"?(<h3>ข้าวผัดพริกแกงหมู: {item.ข้าวผัดพริกแกงหมู}<br/></h3>):null}
+                                                                    {item.ข้าวผัดพริกแกงหมูกรอบ != "0"?(<h3>ข้าวผัดพริกแกงหมูกรอบ: {item.ข้าวผัดพริกแกงหมูกรอบ}<br/></h3>):null}
+                                                                    {item.ข้าวหมูผัดผงกะหรี่ != "0"?(<h3>ข้าวหมูผัดผงกะหรี่: {item.ข้าวหมูผัดผงกะหรี่}<br/></h3>):null}
+                                                                    {item.ข้าวต้มหมู != "0"?(<h3>ข้าวต้มหมู: {item.ข้าวต้มหมู}<br/></h3>):null}
+                                                                    {item. ข้าวไข่เจียวหมูสับ != "0"?(<h3> ข้าวไข่เจียวหมูสับ: {item. ข้าวไข่เจียวหมูสับ}<br/></h3>):null}
+                                                                </div>
+                                                                <hr/>
+                                                            
+                                                            <div className="row">
+                                                                <div className="col-8 ">
+                                                                    <strong>ราคา: <h1 className="ml-3">{item.totalPrice} .-</h1></strong> 
+                                                                </div>
+                                                                <div className="col-4 text-right">
+                                                                    <button className="btn btn-primary btn-lg" onClick={()=>cancelorder(item)}>ตรวจสอบ</button>
+                                                                </div>
+                                                            </div>
+                                                        </Card.Body>
+                                                </Card>
+                                            </div>):null
+                                            :null
+                                        )
+
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </>)
+            }
         </div>
     )
 }
