@@ -392,6 +392,7 @@ const MenuPage =(props)=> {
         EatatStore()
         GetData()
         
+        
 
         
     }, [])
@@ -417,6 +418,7 @@ const MenuPage =(props)=> {
 
     return (
         <div className='MenuPage'>
+         
             {Page == "first"?
             (<>
                 <div className="container-fluid" style={{height: "auto", background: "#3f7db5", color: "white"}}>
@@ -568,7 +570,7 @@ const MenuPage =(props)=> {
                             <img src="https://cdn.dribbble.com/users/572419/screenshots/4646056/drr.gif"/>
                         </div>
                         <div className="col">
-                            <div className="card shadow mx-2" onClick={()=>setPage("first")} style={{cursor: "pointer", color: "black"}}>
+                            <div className="card shadow mx-2"  style={{cursor: "pointer", color: "black"}}>
                                 <div className= 'card-body'>
                                     {DataOrder.map((item, idex)=>{
                                         return(

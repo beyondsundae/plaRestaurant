@@ -9,7 +9,7 @@ const OrderPage =()=> {
 
     var dateFormat = require('dateformat');
     var now = new Date();
-    const timeStamp =  dateFormat(now, "ddd dd-mm-yyyy, HH:MM:ss")
+    const timeStamp =  dateFormat(now, "dd-mm-yyyy, HH:MM")
 
     const LockPic = "https://images.vexels.com/media/users/3/132074/isolated/preview/0117cb0129593faa02646a8277ca80e3-security-lock-icon-by-vexels.png"
 
@@ -124,7 +124,34 @@ const OrderPage =()=> {
         
         (<div className="OrderPage" > 
             <div className='container-fluid py-2'style={{height: "auto", background: "#3f7db5", color: "white"}} >
-                <h1>Order</h1>
+                <div className="row">
+                    <div className="col-8 pt-2">
+                        <h1>Order <h3>วันที่ {timeStamp}</h3> </h1>
+                        
+                    </div>
+
+                    {Auth==!false?
+                        (<>
+                            <div className="col-2 pt-1">
+                                <div className="card shadow mx-3" onClick={()=>GetData()} style={{height: "90%", width: "80%", cursor: "pointer", color: "black"}}>
+                                    <div className= 'card-body'>
+                                        <h3>รีเฟรชข้อมูล</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="col-2 pt-1">
+                                <div className="card shadow mx-3" onClick={()=>setAuth(false)} style={{height: "90%", width: "50%", cursor: "pointer", color: "black"}}>
+                                    <div className= 'card-body'>
+                                        <h3>ล็อค</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </>)
+                        :null
+                    }
+                    
+                    
+                </div>
             </div>
 
             {Auth==false?
