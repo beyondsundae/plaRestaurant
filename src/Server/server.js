@@ -62,6 +62,7 @@ app.post('/sendOrder', (req, res)=>{
         totalPrice:req.body.totalPrice,
         statusCook:"NotDone",
         EatStatus:req.body.EatStatus,
+        TableNumber:req.body.TableNumber,
         ข้าวสวย:req.body.ข้าวสวย?req.body.ข้าวสวย:0,
         ข้าวผัดไก่:req.body.ข้าวผัดไก่?req.body.ข้าวผัดไก่:0,
         ข้าวกะเพราไก่สับ:req.body.ข้าวกะเพราไก่สับ?req.body.ข้าวกะเพราไก่สับ:0,

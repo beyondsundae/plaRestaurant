@@ -35,16 +35,7 @@ const MenuPage =(props)=> {
         })
     }
 
-    const SetInitialBuddhFood =()=>{
-       // let ChangeStatus =[...Menu]
-       // ChangeStatus[index] = {...ChangeStatus[index], status:"Added"}
-        let BuddhMenu = []  
-        for(let i = 0; i<BuddhFood.length; i++){
-            BuddhMenu.push(BuddhFood[i])
-        }
-        setMenu(BuddhMenu)
-    }
-
+    /***************************** Change Each Nation Food *****************************/
     const ChangeBuddhFood =()=>{
         let BuddhMenu = []  
         for(let i = 0; i<BuddhFood.length; i++){
@@ -60,13 +51,12 @@ const MenuPage =(props)=> {
         }
         setMenu(IslamMenu)
     }
-        
+    
+    /***************************** Add Food FirstTime *****************************/
     const AddBuddhFirst =(item, index)=>{
         let ChangeStatus =[...BuddhFood]
         ChangeStatus[index] = {...ChangeStatus[index], status:"Added"}
         setBuddhFood(ChangeStatus)
-        // ChangeBuddhFood()
-        //console.log(BuddhFood)
         console.log("item ที่เข้ามา", item, index)
         setOrder([...Order, {...item, amount:1} ])
         //console.log("Menu ที่มี", Menu)
@@ -75,13 +65,44 @@ const MenuPage =(props)=> {
         let ChangeStatus =[...IslamFood]
         ChangeStatus[index] = {...ChangeStatus[index], status:"Added"}
         setIslamFood(ChangeStatus)
-        // ChangeIslamFood()
-        //console.log(IslamFood)
         console.log("item ที่เข้ามา", item, index)
         setOrder([...Order, {...item, amount:1} ])
         //console.log("Menu ที่มี", Menu)
     }
 
+    /***************************** Add Food Color Function *****************************/
+    const AddFoodButton =({item, index})=>{
+        // [+] button with condition to change function and color
+        if(item.status == "NoAdded"){
+                if(item.nation == "Buddh"){
+                    return(
+                        <button className='btn btn-success'  
+                            // style={{marginRight: "-100px", marginLeft: '100px'}}
+                            onClick={()=>{AddBuddhFirst(item, index)}}>
+                        +
+                        </button>
+                        )  
+                } else {
+                    return(
+                        <button className='btn btn-danger'  
+                            // style={{marginRight: "-100px", marginLeft: '100px'}}
+                            onClick={()=>AddIslamFirst(item, index)}>
+                        +
+                        </button>
+                    )
+                }
+        } else {
+            return(
+            <button className='btn btn-primary'  
+                // style={{marginRight: "-100px", marginLeft: '100px'}}
+                onClick={()=>addAmount(item, index)}>
+            +
+            </button>
+            )
+        }
+    }
+
+    /***************************** Add Amount *****************************/
     const addAmount =(selectedItem)=>{
         //console.log("ที่เลือกมา :", selectedItem, index)
         let hardCopy = [...Order]
@@ -108,6 +129,7 @@ const MenuPage =(props)=> {
             setOrder(origin)
     }
 
+    /***************************** Minus Amount *****************************/
     const minusAmount =(selectedItem, index)=>{
         //console.log("ที่เลือกมา :", selectedItem, index)
         let hardCopy = [...Order]
@@ -152,6 +174,7 @@ const MenuPage =(props)=> {
             setOrder(hardCopy)
     }
     
+    /***************************** Clear All Order *****************************/
     const removeOrder =(selectedItem, index)=>{
         // item ที่เข้ามาคือ item ของตัวที่กดเลือกในช่องOrder
         let hardCopy = [...Order]
@@ -171,47 +194,43 @@ const MenuPage =(props)=> {
         setOrder(hardCopy)
     }
 
+    /***************************** Change Buddh Food Status to NoAdded BY that item *****************************/
     const goBackBuddhStatus =(item, index)=>{
         //console.log("NoAdded", index)
-
         const ClearALLBuddh = BuddhFood.map((list, index)=>{
             if(item.food === list.food){
                 return({...list, status:"NoAdded"})
-            }
-            else{
+            }else{
                 return(list)
             }
         })
         setBuddhFood(ClearALLBuddh)
     }
+    /***************************** Change Islam Food Status to NoAdded BY that item *****************************/
     const goBackIslamStatus =(item, index)=>{
         //console.log("NoAdded", index)
-
         const ClearALLIslam = IslamFood.map((list, index)=>{
             if(item.food === list.food){
                 return({...list, status:"NoAdded"})
-            }
-            else{
+            }else{
                 return(list)
             }
         })
         setIslamFood(ClearALLIslam)
     }
+    /***************************** Change All Food Status to NoAdded *****************************/
     const goBackALLStatus =()=>{
-        //let ChangeBuddhStatus =[...BuddhFood]
-        //ChangeBuddhStatus = {...ChangeBuddhStatus, status:"NoAdded"}
-
         const ClearALLIslam = IslamFood.map((list, index)=>{
             return({...list, status:"NoAdded"})
         })
         setIslamFood(ClearALLIslam)
-
         const ClearALLBuddh = BuddhFood.map((list, index)=>{
                 return({...list, status:"NoAdded"})
         })
         setBuddhFood(ClearALLBuddh)
     }
 
+    /***************************** Sum total price *****************************/
     const total =()=>{
         let totalVal = 0
         // Order.map((item)=>{
@@ -225,18 +244,20 @@ const MenuPage =(props)=> {
         setOrdertotal(totalVal)
     }
 
-    const EatatHome =()=>{
-        setEatStatus("Home")
-        setEatColor1("btn btn-primary btn-block")
-        setEatColor2("btn btn-secondary btn-block")
-    }
+    /***************************** Toggle Status for setState *****************************/
     const EatatStore =()=>{
         setEatStatus("Store")
         setEatColor1("btn btn-secondary btn-block")
         setEatColor2("btn btn-primary btn-block")
     }
-
-    const confirmSubmit =(e)=>{
+    const EatatHome =()=>{
+        setEatStatus("Home")
+        setEatColor1("btn btn-primary btn-block")
+        setEatColor2("btn btn-secondary btn-block")
+    }
+    
+    /***************************** Confirm Order *****************************/
+    const confirmSubmit =()=>{
         var txt;
             if(Order > [] ){
                 if (window.confirm(`ต้องการ"ยืนยัน"รายการทั้งหมดใช่หรือไม่`)) {
@@ -248,8 +269,9 @@ const MenuPage =(props)=> {
                 alert("กรุณาเลือกรายการอาหาร")
             }
     }
-    const submitOrder =(e)=>{
-        console.log(timeStamp)
+    /***************************** Submit Order *****************************/
+    const submitOrder =()=>{
+        // console.log(timeStamp)
 
         var OrderNow = {};
             for (var i = 0; i < Order.length; i++) {
@@ -277,11 +299,13 @@ const MenuPage =(props)=> {
                 alert("สั่งอาหารสำเร็จ")
                 goBackALLStatus()
                 setOrder([])
+
                 GetData()
                 setPage("second")
             }, 1000)
     }
-    
+
+    /***************************** Cancel Order *****************************/
     const cancelOrder =()=>{
         var txt;
         if (window.confirm("ต้องการยกเลิกการรายการทั้งหมดใช่หรือไม่")) {
@@ -292,38 +316,9 @@ const MenuPage =(props)=> {
         }
     }
 
-    const ViewButton =({item, index})=>{
-        if(item.status == "NoAdded"){
-                if(item.nation == "Buddh"){
-                    return(
-                        <button className='btn btn-success'  
-                            // style={{marginRight: "-100px", marginLeft: '100px'}}
-                            onClick={()=>{AddBuddhFirst(item, index)}}>
-                        +
-                        </button>
-                        )  
-                } else {
-                    return(
-                        <button className='btn btn-danger'  
-                            // style={{marginRight: "-100px", marginLeft: '100px'}}
-                            onClick={()=>AddIslamFirst(item, index)}>
-                        +
-                        </button>
-                    )
-                }
-        } else{
-            return(
-            <button className='btn btn-primary'  
-                // style={{marginRight: "-100px", marginLeft: '100px'}}
-                onClick={()=>addAmount(item, index)}>
-            +
-            </button>
-            )
-        }
-    }
-
    
     const readyToStore =()=>{
+        //scrap members in array to one object
         var resultx = {};
             for (var i = 0; i < Order.length; i++) {
                 resultx[Order[i].food] = Order[i].amount
@@ -362,14 +357,8 @@ const MenuPage =(props)=> {
         alert(props.TableNumber)
     }
 
+    //Get Menu มาเก็บไว้ใน Arr ของเเต่ละชนิดก่อน
     useEffect(()=>{
-        //ไม่ต้องใส่ก็ได้
-        let BuddhMenu = []  
-        for(let i = 0; i<BuddhFood.length; i++){
-            BuddhMenu.push(BuddhFood[i])
-        }
-        setMenu(BuddhMenu)
-        
         axios.get('http://localhost:4000/IslamFood')
         .then((res)=>{
             const result = res.data
@@ -391,12 +380,9 @@ const MenuPage =(props)=> {
 
         EatatStore()
         GetData()
-        
-        
-
-        
     }, [])
 
+    //set เมนูตอนเเรกให้เป็นอาหารบุดดุ
     useEffect(()=>{
         ChangeIslamFood()
     },[IslamFood])
@@ -405,9 +391,11 @@ const MenuPage =(props)=> {
         ChangeBuddhFood()
     },[BuddhFood])
 
+    //อัพเดทราคา
     useEffect(()=>{
         console.log("Order Total", Order)
         console.log("Menu ที่มี", Menu)
+        //เเสดงราคาทุหครังที่มีออเดอร์เข้ามา
         total()
     }, [Order])
 
@@ -449,29 +437,30 @@ const MenuPage =(props)=> {
                 </div>
 
                 <div className="container-fluid"  style={{height: "85vh"}}>
-                    <div className="row">
-                        <div className="col-8"  style={{height: "85vh", padding: "0px"}}>
-                        <table class="table">
-                            <thead class="thead-dark">
-                                <tr>
-                                <th scope="col">อาหาร</th>
-                                <th scope="col">ราคา</th>
-                                <th></th>
-                                </tr>
-                            </thead>
-                        
-                            <tbody>
+                    <div className="row" >
+                        <div className="col-8"  style={{height: "85vh"}}>
+                            <div className="row border border-danger" style={{height: "85vh", overflow: "auto"}}>
                             {Menu.map((item, index)=>{
                                 return(
-                                <tr key={item.food}>
-                                <th>{item.food}</th>
-                                <th>{item.price}.-</th>
-                                <th> <ViewButton item={item} index={index}/></th>
-                                {/*<th>{item.status} </th>*/}
-                                </tr>
+                               
+                                <div className="card " key={index} style={{width: "21em", margin: "5px"}}>
+                                    <div className="text-center">
+                                        <img class="card-img-top" src="https://i.pinimg.com/564x/a5/34/59/a53459aa45fb7f89982c361a88d77737.jpg" style={{maxWidth: "270px"}}/>
+                                    </div>
+                                     
+                                    <div className="card-body">
+                                        <h3 className="card-title">
+                                            {item.food}
+                                        </h3>
+                                        <p>ราคา: {item.price} .-</p>
+                                        <div className="text-right">
+                                            <AddFoodButton item={item} index={index}/>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
                             )})}
-                            </tbody>
-                            </table>
+                            </div>
                         </div>
 
                         <div className="col-4"  style={{height: "auto"}}>
@@ -503,8 +492,6 @@ const MenuPage =(props)=> {
                                     <button className="mx-2 btn-dark" onClick={()=>addAmount(item, index)}>+</button></th>
                                 <th>{item.price * item.amount} </th>
                                 <th><button className="btn-dark ml-2" onClick={()=>removeOrder(item, index)}>ล้าง</button></th>
-                                {/*<th><button className="btn-success ml-2" onClick={()=>goBackBuddhStatus(item, index)}>x</button>
-                                <button className="btn-danger ml-2" onClick={()=>goBackIslamStatus(item, index)}>x</button></th>*/}
                                 </tr>
                             )})}
                             </tbody>
