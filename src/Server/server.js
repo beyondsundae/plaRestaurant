@@ -54,6 +54,15 @@ app.get('/IslamFood', (req, res)=>{
         }
     })
 })
+app.get("/Drink", (req, res)=>{
+    connection.query("SELECT * FROM drink", (err, result, field)=>{
+        if(err){
+            throw err
+        }else{
+            res.send(result)
+        }
+    })
+})
 
 app.post('/sendOrder', (req, res)=>{
     console.log("Insert Done")

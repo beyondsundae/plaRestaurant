@@ -19,12 +19,13 @@ const MenuPage =(props)=> {
 
     const [BuddhFood, setBuddhFood] = useState([])
     const [IslamFood, setIslamFood] = useState([])
+    const [Drink, setDrink] = useState([])
 
     const [EatStatus, setEatStatus] = useState("Store")
     const [EatColor1, setEatColor1] = useState("btn btn-primary btn-block")
     const [EatColor2, setEatColor2] = useState("btn btn-primary btn-block")
 
-    const GetData =()=>{
+    const GetDataOrder =()=>{
         axios.get('http://localhost:4000/Data')
         .then((res)=>{
             const result = res.data
@@ -34,6 +35,39 @@ const MenuPage =(props)=> {
             alert(err)
         })
     }
+
+    const GetDataMenu =()=>{
+        axios.get('http://localhost:4000/Drink')
+        .then((res)=>{
+            const result = res.data
+            setDrink(result)
+        })
+        .catch((err)=>{
+            alert(err)
+        })
+
+        axios.get('http://localhost:4000/IslamFood')
+        .then((res)=>{
+            const result = res.data
+            //console.log(result)
+            setIslamFood(result)
+        })
+        .catch((err)=>{
+            alert(err)
+        })
+
+        axios.get('http://localhost:4000/BuddhFood')
+        .then((res)=>{
+            const result = res.data
+            //console.log(result)
+            setBuddhFood(result)
+        })
+        .catch((err)=>{
+            alert(err)
+        })
+       
+    }
+
 
     /***************************** Change Each Nation Food *****************************/
     const ChangeBuddhFood =()=>{
@@ -50,6 +84,12 @@ const MenuPage =(props)=> {
             IslamMenu.push(IslamFood[i])
         }
         setMenu(IslamMenu)
+    }
+    const ChangeDrink =()=>{
+        const Drinkx  = Drink.map((item)=>{
+            return item
+        })
+        setMenu(Drinkx)
     }
     
     /***************************** Add Food FirstTime *****************************/
@@ -69,6 +109,14 @@ const MenuPage =(props)=> {
         setOrder([...Order, {...item, amount:1} ])
         //console.log("Menu ที่มี", Menu)
     }
+    const AddDrinkfirst =(item, index)=>{
+        let ChangeStatus =[...Drink]
+        ChangeStatus[index] = {...ChangeStatus[index], status:"Added"}
+        setDrink(ChangeStatus)
+        console.log("item ที่เข้ามา", item, index)
+        setOrder([...Order, {...item, amount:1} ])
+        //console.log("Menu ที่มี", Menu)
+    }
 
     /***************************** Add Food Color Function *****************************/
     const AddFoodButton =({item, index})=>{
@@ -82,11 +130,19 @@ const MenuPage =(props)=> {
                         +
                         </button>
                         )  
-                } else {
+                } else if(item.nation == "Islam"){
                     return(
                         <button className='btn btn-danger'  
                             // style={{marginRight: "-100px", marginLeft: '100px'}}
                             onClick={()=>AddIslamFirst(item, index)}>
+                        +
+                        </button>
+                    )
+                } else if(item.nation == "drink"){
+                    return(
+                        <button className='btn btn-warning'  
+                            // style={{marginRight: "-100px", marginLeft: '100px'}}
+                            onClick={()=>AddDrinkfirst(item, index)}>
                         +
                         </button>
                     )
@@ -121,7 +177,7 @@ const MenuPage =(props)=> {
         // })
 
         for (let i = 0; i<hardCopy.length; i++){
-            if(hardCopy[i].food == selectedItem.food){
+            if(hardCopy[i].food == selectedItem.food ){
                 hardCopy[i].amount += 1
             }
         }
@@ -300,7 +356,7 @@ const MenuPage =(props)=> {
                 goBackALLStatus()
                 setOrder([])
 
-                GetData()
+                GetDataOrder()
                 setPage("second")
             }, 1000)
     }
@@ -315,7 +371,6 @@ const MenuPage =(props)=> {
             txt = "You pressed Cancel!";
         }
     }
-
    
     const readyToStore =()=>{
         //scrap members in array to one object
@@ -359,30 +414,14 @@ const MenuPage =(props)=> {
 
     //Get Menu มาเก็บไว้ใน Arr ของเเต่ละชนิดก่อน
     useEffect(()=>{
-        axios.get('http://localhost:4000/IslamFood')
-        .then((res)=>{
-            const result = res.data
-            //console.log(result)
-            setIslamFood(result)
-        })
-        .catch((err)=>{
-            alert(err)
-        })
-        axios.get('http://localhost:4000/BuddhFood')
-        .then((res)=>{
-            const result = res.data
-            //console.log(result)
-            setBuddhFood(result)
-        })
-        .catch((err)=>{
-            alert(err)
-        })
-
+        GetDataMenu()
         EatatStore()
-        GetData()
+        GetDataOrder()
+        
     }, [])
 
     //set เมนูตอนเเรกให้เป็นอาหารบุดดุ
+    
     useEffect(()=>{
         ChangeIslamFood()
     },[IslamFood])
@@ -390,6 +429,10 @@ const MenuPage =(props)=> {
         //ให้ Render อาหารบุดดุตอนเริ่ม
         ChangeBuddhFood()
     },[BuddhFood])
+    useEffect(()=>{
+        //ให้ Render อาหารบุดดุตอนเริ่ม
+        ChangeDrink()
+    },[Drink])
 
     //อัพเดทราคา
     useEffect(()=>{
@@ -427,6 +470,7 @@ const MenuPage =(props)=> {
                         <div className="col-11">
                             <button className='btn btn-info mx-2' onClick={()=>ChangeBuddhFood()}>พุทธ</button>
                             <button className='btn btn-info mx-2' onClick={()=>ChangeIslamFood()}>อิสลาม</button>
+                            <button className='btn btn-info mx-2' onClick={()=>ChangeDrink()}>เครื่องดื่ม</button>
                         </div>
                         
                         <div className="col-1 pb-2">
@@ -439,18 +483,18 @@ const MenuPage =(props)=> {
                 <div className="container-fluid"  style={{height: "85vh"}}>
                     <div className="row" >
                         <div className="col-8"  style={{height: "85vh"}}>
-                            <div className="row border border-danger" style={{height: "85vh", overflow: "auto"}}>
+                            <div className="row" style={{height: "85vh", overflow: "auto"}}>
                             {Menu.map((item, index)=>{
                                 return(
                                
-                                <div className="card " key={index} style={{width: "21em", margin: "5px"}}>
+                                <div className="card shadow" key={index} style={{width: "21em", maxHeight: "28em", margin: "5px"}}>
                                     <div className="text-center">
                                         <img class="card-img-top" src="https://i.pinimg.com/564x/a5/34/59/a53459aa45fb7f89982c361a88d77737.jpg" style={{maxWidth: "270px"}}/>
                                     </div>
                                      
                                     <div className="card-body">
                                         <h3 className="card-title">
-                                            {item.food}
+                                            {item.food || item.drink}
                                         </h3>
                                         <p>ราคา: {item.price} .-</p>
                                         <div className="text-right">
@@ -485,7 +529,7 @@ const MenuPage =(props)=> {
                             {Order.map((item, index)=>{
                                 return(
                                 <tr key={index}>
-                                <th>{item.food}</th>
+                                <th>{item.food || item.drink}</th>
                                 <th>
                                     <button className="mx-2 btn-dark" onClick={()=>minusAmount(item, index)}>-</button>
                                         {item.amount}
