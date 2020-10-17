@@ -37,7 +37,7 @@ const MenuPage =(props)=> {
     }
 
     const GetDataMenu =()=>{
-        axios.get('http://localhost:4000/Drink')
+         axios.get('http://localhost:4000/Drink')
         .then((res)=>{
             const result = res.data
             setDrink(result)
@@ -127,7 +127,7 @@ const MenuPage =(props)=> {
                         <button className='btn btn-success'  
                             // style={{marginRight: "-100px", marginLeft: '100px'}}
                             onClick={()=>{AddBuddhFirst(item, index)}}>
-                        +
+                        Add
                         </button>
                         )  
                 } else if(item.nation == "Islam"){
@@ -135,7 +135,7 @@ const MenuPage =(props)=> {
                         <button className='btn btn-danger'  
                             // style={{marginRight: "-100px", marginLeft: '100px'}}
                             onClick={()=>AddIslamFirst(item, index)}>
-                        +
+                        Add
                         </button>
                     )
                 } else if(item.nation == "drink"){
@@ -143,7 +143,7 @@ const MenuPage =(props)=> {
                         <button className='btn btn-warning'  
                             // style={{marginRight: "-100px", marginLeft: '100px'}}
                             onClick={()=>AddDrinkfirst(item, index)}>
-                        +
+                        Add
                         </button>
                     )
                 }
@@ -152,7 +152,7 @@ const MenuPage =(props)=> {
             <button className='btn btn-primary'  
                 // style={{marginRight: "-100px", marginLeft: '100px'}}
                 onClick={()=>addAmount(item, index)}>
-            +
+            Add More...
             </button>
             )
         }
@@ -167,7 +167,7 @@ const MenuPage =(props)=> {
         // hardCopy = hardCopy.filter((cartItem)=>{
         //     console.log("ที่มีอยู่ใน Order :",cartItem)
             
-        //     if(cartItem.food == selectedItem.food){
+        //     if(cartItem.name == selectedItem.name){
         //         // item ที่เลือก == ไอเทมที่มีใน Order
         //         return(
         //             cartItem.amount += 1
@@ -177,7 +177,7 @@ const MenuPage =(props)=> {
         // })
 
         for (let i = 0; i<hardCopy.length; i++){
-            if(hardCopy[i].food == selectedItem.food ){
+            if(hardCopy[i].name == selectedItem.name ){
                 hardCopy[i].amount += 1
             }
         }
@@ -193,7 +193,7 @@ const MenuPage =(props)=> {
         hardCopy = hardCopy.filter((cartItem)=>{
             //console.log("ที่มีอยู่ใน Order :",cartItem)
            
-            if(cartItem.food == selectedItem.food){
+            if(cartItem.name == selectedItem.name){
                 // item ที่เลือก == ไอเทมที่มีใน Order
                 
                     console.log("Minus Done")
@@ -203,9 +203,9 @@ const MenuPage =(props)=> {
                 //ต้องคืนอาหารเดิม เเละ เพิ่มจำนวนอาหารที่เลือกไป
             } 
 
-            if(cartItem.food !== selectedItem.food) {
+            if(cartItem.name !== selectedItem.name) {
                 return(
-                    cartItem.food != selectedItem.food
+                    cartItem.name != selectedItem.name
                     
                     // return ทุกอย่างที่ไม่ใช่ตัวที่เลือกมา
                 )
@@ -213,20 +213,19 @@ const MenuPage =(props)=> {
         })
 
          {/*for (let i = 0; i<hardCopy.length; i++){
-             console.log(hardCopy[i].food)
-             console.log(selectedItem.food)
-            if(hardCopy[i].food == selectedItem.food){
+             console.log(hardCopy[i].name)
+             console.log(selectedItem.name)
+            if(hardCopy[i].name == selectedItem.name){
                   (hardCopy[i].amount -= 1)
              }
 
-             else if((hardCopy[i].food < selectedItem.food)){
+             else if((hardCopy[i].name < selectedItem.name)){
                  console.log("wow")
-                return  hardCopy.push(hardCopy[i].food  !== selectedItem.food)
+                return  hardCopy.push(hardCopy[i].name  !== selectedItem.name)
          }}*/}
             //console.log('ที่จะคืนไป Order', origin)
-            console.log('hardCopy', hardCopy)
-            goBackBuddhStatus(selectedItem, index)
-            goBackIslamStatus(selectedItem, index)
+            //console.log('hardCopy', hardCopy)
+            goBackGate(selectedItem, index)
             setOrder(hardCopy)
     }
     
@@ -239,22 +238,32 @@ const MenuPage =(props)=> {
             // เอามา loop เพื่อดูว่าใน Order นั้นมี object อะไรบ้างและจะเอา object ที่ลูปมาทำ condition แล้วจะคืนค่าจาการ condition ไป
             // console.log('ใน Order :', cartItem)
             return(
-            cartItem.food !== selectedItem.food
+            cartItem.name !== selectedItem.name
             )
             //จะคืนข้าวกับกะเพราที่ไม่มีข้าวเปล่า ก็คือจะเหลือเเค่กะเพราคนเดียว
             //เปรียบเทียบว่าให้ return ของที่อยู่ในตะกร้ากลับไปโดยทที่จะไม่มีตัว item ที่เข้ามา
         })
-        console.log("กูจะคืน :", hardCopy)
-        goBackBuddhStatus(selectedItem, index)
-        goBackIslamStatus(selectedItem, index)
+        //console.log("กูจะคืน :", hardCopy)
+        goBackGate(selectedItem, index)
         setOrder(hardCopy)
+    }
+
+    const goBackGate =(item, index)=>{
+        //คืนค่า NoAdded ให้เเต่ละชนิด ไม่เหมารวม
+        const backDrink = Drink.some((list)=>{ return list.name == item.name })
+            if(backDrink == true) {
+                goBackDrinkStatus(item, index)}
+        const backBuddh = BuddhFood.some((list)=>{ return list.name == item.name })
+            if(backBuddh == true) goBackBuddhStatus(item, index)
+        const backIslam = IslamFood.some((list)=>{ return list.name == item.name })
+            if(backIslam == true) goBackIslamStatus(item, index)
     }
 
     /***************************** Change Buddh Food Status to NoAdded BY that item *****************************/
     const goBackBuddhStatus =(item, index)=>{
         //console.log("NoAdded", index)
         const ClearALLBuddh = BuddhFood.map((list, index)=>{
-            if(item.food === list.food){
+            if(item.name === list.name){
                 return({...list, status:"NoAdded"})
             }else{
                 return(list)
@@ -266,7 +275,7 @@ const MenuPage =(props)=> {
     const goBackIslamStatus =(item, index)=>{
         //console.log("NoAdded", index)
         const ClearALLIslam = IslamFood.map((list, index)=>{
-            if(item.food === list.food){
+            if(item.name === list.name){
                 return({...list, status:"NoAdded"})
             }else{
                 return(list)
@@ -274,16 +283,32 @@ const MenuPage =(props)=> {
         })
         setIslamFood(ClearALLIslam)
     }
+    /***************************** Change Drink Status to NoAdded BY that item *****************************/
+    const goBackDrinkStatus =(item, index)=>{
+        //console.log("NoAdded", index)
+        const ClearALLDrink = Drink.map((list, index)=>{
+            if(item.name === list.name){
+                return({...list, status:"NoAdded"})
+            }else{
+                return(list)
+            }
+        })
+           setDrink(ClearALLDrink)
+    }
     /***************************** Change All Food Status to NoAdded *****************************/
     const goBackALLStatus =()=>{
         const ClearALLIslam = IslamFood.map((list, index)=>{
             return({...list, status:"NoAdded"})
         })
-        setIslamFood(ClearALLIslam)
+        setIslamFood(ClearALLIslam)  
         const ClearALLBuddh = BuddhFood.map((list, index)=>{
                 return({...list, status:"NoAdded"})
         })
         setBuddhFood(ClearALLBuddh)
+        const ClearALLDrink = Drink.map((list, index)=>{
+            return({...list, status:"NoAdded"})
+        })
+        setDrink(ClearALLBuddh)
     }
 
     /***************************** Sum total price *****************************/
@@ -331,7 +356,7 @@ const MenuPage =(props)=> {
 
         var OrderNow = {};
             for (var i = 0; i < Order.length; i++) {
-                OrderNow[Order[i].food] = Order[i].amount
+                OrderNow[Order[i].name] = Order[i].amount
                 //Combine whole order to one object
             }
             console.log(OrderNow);
@@ -376,33 +401,33 @@ const MenuPage =(props)=> {
         //scrap members in array to one object
         var resultx = {};
             for (var i = 0; i < Order.length; i++) {
-                resultx[Order[i].food] = Order[i].amount
+                resultx[Order[i].name] = Order[i].amount
             }
             console.log(resultx);
 
         var object = Order.reduce((obj, item) => 
-            Object.assign(obj, { [item.food]: item.amount }), {});
+            Object.assign(obj, { [item.name]: item.amount }), {});
             console.log(object)
 
         var result = Order.reduce((obj,item)=>{
-            obj[item.food] = item.amount; 
+            obj[item.name] = item.amount; 
             return obj }, {});
             console.log(result)
 
         var result2 = Order.reduce((obj,item)=>(
-            {...obj,[item.food] : item.amount}), {});
+            {...obj,[item.name] : item.amount}), {});
             console.log(result2)
 
         let wow =Order.map((item)=>{
-            return Object.assign({ [item.food]: item.amount }) 
+            return Object.assign({ [item.name]: item.amount }) 
         })
         let wow2 = Object.assign({}, ...wow)
             console.log(wow2)
 
-        const obj = Object.fromEntries(Order.map(item => [item.food, item.amount]));
+        const obj = Object.fromEntries(Order.map(item => [item.name, item.amount]));
         console.log(obj);
 
-        const newObject = Object.assign({}, ...Order.map(item => ({ [item.food]: item.amount })));
+        const newObject = Object.assign({}, ...Order.map(item => ({ [item.name]: item.amount })));
         console.log(newObject);
 
         //settempOrder(temp)
@@ -414,10 +439,10 @@ const MenuPage =(props)=> {
 
     //Get Menu มาเก็บไว้ใน Arr ของเเต่ละชนิดก่อน
     useEffect(()=>{
-        GetDataMenu()
         EatatStore()
         GetDataOrder()
-        
+        GetDataMenu()
+       
     }, [])
 
     //set เมนูตอนเเรกให้เป็นอาหารบุดดุ
@@ -427,12 +452,12 @@ const MenuPage =(props)=> {
     },[IslamFood])
     useEffect(()=>{
         //ให้ Render อาหารบุดดุตอนเริ่ม
-        ChangeBuddhFood()
-    },[BuddhFood])
-    useEffect(()=>{
-        //ให้ Render อาหารบุดดุตอนเริ่ม
         ChangeDrink()
     },[Drink])
+    useEffect(()=>{
+        //ให้ Render อาหารบุดดุตอนเริ่ม
+        ChangeBuddhFood()
+    },[BuddhFood])
 
     //อัพเดทราคา
     useEffect(()=>{
@@ -487,15 +512,15 @@ const MenuPage =(props)=> {
                             {Menu.map((item, index)=>{
                                 return(
                                
-                                <div className="card shadow" key={index} style={{width: "21em", maxHeight: "28em", margin: "5px"}}>
+                                <div className="card shadow" key={index} style={{width: "18em", maxHeight: "28em", margin: "5px"}}>
                                     <div className="text-center">
                                         <img class="card-img-top" src="https://i.pinimg.com/564x/a5/34/59/a53459aa45fb7f89982c361a88d77737.jpg" style={{maxWidth: "270px"}}/>
                                     </div>
                                      
                                     <div className="card-body">
-                                        <h3 className="card-title">
-                                            {item.food || item.drink}
-                                        </h3>
+                                        <h4 className="card-title">
+                                            {item.name}
+                                        </h4>
                                         <p>ราคา: {item.price} .-</p>
                                         <div className="text-right">
                                             <AddFoodButton item={item} index={index}/>
@@ -529,7 +554,7 @@ const MenuPage =(props)=> {
                             {Order.map((item, index)=>{
                                 return(
                                 <tr key={index}>
-                                <th>{item.food || item.drink}</th>
+                                <th>{item.name}</th>
                                 <th>
                                     <button className="mx-2 btn-dark" onClick={()=>minusAmount(item, index)}>-</button>
                                         {item.amount}
@@ -595,13 +620,13 @@ const MenuPage =(props)=> {
                     </div>
                 </div>
 
-                <div className="container-fluid"  style={{height: "85vh", background: 'rgb(239, 244, 222)'}}>
+                <div className="container-fluid"  style={{height: "85vh", background: 'rgb(236, 240, 222)'}}>
                     <div className="row mt-2">
                         <div className="col">
                             <img src="https://cdn.dribbble.com/users/572419/screenshots/4646056/drr.gif"/>
                         </div>
                         <div className="col">
-                            <div className="card shadow mx-2"  style={{cursor: "pointer", color: "black"}}>
+                            <div className="card shadow mx-2"  style={{cursor: "pointer", color: "black", maxHeight: '85vh', overflow: "scroll"}}>
                                 <div className= 'card-body'>
                                     {DataOrder.map((item, idex)=>{
                                         return(
@@ -650,7 +675,7 @@ const MenuPage =(props)=> {
                                                                     <strong>ราคา: <h1 className="ml-3">{item.totalPrice} .-</h1></strong> 
                                                                 </div>
                                                                 <div className="col-4 text-right">
-                                                                    <button className="btn btn-primary btn-lg" onClick={()=>cancelorder(item)}>ตรวจสอบ</button>
+                                                                    {/*<button className="btn btn-primary btn-lg" onClick={()=>cancelorder(item)}>ตรวจสอบ</button>*/}
                                                                 </div>
                                                             </div>
                                                         </Card.Body>
