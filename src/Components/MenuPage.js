@@ -1,6 +1,9 @@
 import React, {useState, useEffect} from 'react'
 import axios from 'axios'
 import Card from 'react-bootstrap/Card'
+import Swal from 'sweetalert2'
+import { queries } from '@testing-library/react'
+
 
 const MenuPage =(props)=> {
 
@@ -341,13 +344,39 @@ const MenuPage =(props)=> {
     const confirmSubmit =()=>{
         var txt;
             if(Order > [] ){
-                if (window.confirm(`ต้องการ"ยืนยัน"รายการทั้งหมดใช่หรือไม่`)) {
-                    submitOrder()
-                } else {
-                    txt = "You pressed Cancel!";
-                }
+                // if (window.confirm(`ต้องการ"ยืนยัน"รายการทั้งหมดใช่หรือไม่`)) {
+                //     submitOrder()
+                // } else {
+                //     txt = "You pressed Cancel!";
+                // }
+                Swal.fire({
+                    title: "ต้องการ'ยืนยัน'รายการทั้งหมดใช่หรือไม่",
+                    icon:"question",
+                    showConfirmButton:true,
+                    confirmButtonColor:"",
+                    confirmButtonText: "ยืนยัน",
+
+                    showCancelButton:true,
+                    confirmButtonColor: "",
+                    confirmButtonText: "กลับไปทำต่อ"
+                    
+                })
+                .then((result)=>{
+                    if(result.isConfirmed){
+                        Swal.fire({
+                            
+                        })
+                    }
+                    else {
+                        
+                    }
+                })
             }else{
-                alert("กรุณาเลือกรายการอาหาร")
+                Swal.fire({
+                    title: "กรุณาเลือกรายการอาหารก่อน", 
+                    icon: "warning", 
+                    showConfirmButton: false, 
+                    timer: 1500});
             }
     }
     /***************************** Submit Order *****************************/
@@ -388,13 +417,31 @@ const MenuPage =(props)=> {
 
     /***************************** Cancel Order *****************************/
     const cancelOrder =()=>{
-        var txt;
-        if (window.confirm("ต้องการยกเลิกการรายการทั้งหมดใช่หรือไม่")) {
-            setOrder([])
-            goBackALLStatus()
-        } else {
-            txt = "You pressed Cancel!";
-        }
+        Swal.fire({
+            title: "ต้องการยกเลิกการรายการทั้งหมดใช่หรือไม่",
+            icon: "question",
+            confirmButtonText: "ยกเลิกทั้งหมด",
+            confirmButtonColor: "#ec003a",
+
+            cancelButtonText: "กลับไปทำต่อ",
+            showCancelButton: true,
+            //cancelButtonColor: "blue",
+            reverseButtons: true,
+
+        })
+        .then((result)=>{
+            if(result.isConfirmed){
+                Swal.fire({
+                    icon: "success",
+                    title: "ยกเลิกทุกรายการเรียบร้อย",
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+                setOrder([])
+                goBackALLStatus()
+            }
+
+        })
     }
    
     const readyToStore =()=>{
@@ -493,8 +540,8 @@ const MenuPage =(props)=> {
                         </div>
 
                         <div className="col-11">
-                            <button className='btn btn-info mx-2' onClick={()=>ChangeBuddhFood()}>พุทธ</button>
-                            <button className='btn btn-info mx-2' onClick={()=>ChangeIslamFood()}>อิสลาม</button>
+                            <button className='btn btn-info mx-2' onClick={()=>ChangeBuddhFood()}>อาหาร</button>
+                            <button className='btn btn-info mx-2' onClick={()=>ChangeIslamFood()}>ของทานเล่น</button>
                             <button className='btn btn-info mx-2' onClick={()=>ChangeDrink()}>เครื่องดื่ม</button>
                         </div>
                         
@@ -587,8 +634,15 @@ const MenuPage =(props)=> {
                                     </div>
                                 </div>
                                 
-                                <button className="btn btn-success btn-lg mt-3" onClick={()=>confirmSubmit()}>สั่งอาหาร</button>
-                                <button className="btn btn-danger mt-3" onClick={()=>cancelOrder()}>ยกเลิก</button>
+                                <div className="row">
+                                    <div className="col-3" style={{paddingRight : 0 }}>
+                                        <button className="btn btn-danger btn-lg mt-3 " style={{width: "100%"}} onClick={()=>cancelOrder()}>ยกเลิก</button>
+                                    </div>
+                                    <div className="col-9">
+                                        <button className="btn btn-success btn-lg  mt-3" style={{width: "100%"}} onClick={()=>confirmSubmit()}>สั่งอาหาร</button>
+                                    </div>
+                                </div>
+                                
                             </div>
                         </div>
                     </div>
@@ -626,7 +680,7 @@ const MenuPage =(props)=> {
                             <img src="https://cdn.dribbble.com/users/572419/screenshots/4646056/drr.gif"/>
                         </div>
                         <div className="col">
-                            <div className="card shadow mx-2"  style={{cursor: "pointer", color: "black", maxHeight: '85vh', overflow: "scroll"}}>
+                            <div className="card shadow mx-2"  style={{cursor: "pointer", color: "black", maxHeight: '75vh', overflow: "scroll"}}>
                                 <div className= 'card-body'>
                                     {DataOrder.map((item, idex)=>{
                                         return(
