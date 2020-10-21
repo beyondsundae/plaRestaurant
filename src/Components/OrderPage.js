@@ -3,13 +3,15 @@ import axios from 'axios'
 import Accordion from 'react-bootstrap/Accordion'
 import Button from 'react-bootstrap/Button'
 import Card from 'react-bootstrap/Card'
-
+import Swal from 'sweetalert2'
+import moment from 'moment';
 
 const OrderPage =()=> {
 
     var dateFormat = require('dateformat');
     var now = new Date();
-    const timeStamp =  dateFormat(now, "dd-mm-yyyy, HH:MM")
+    const timeStamp =  dateFormat(now, "dd-mm-yyyy,")
+    const [ClockNow, setClockNow] = useState(moment().format('HH:mm:ss'));
 
     const LockPic = "https://images.vexels.com/media/users/3/132074/isolated/preview/0117cb0129593faa02646a8277ca80e3-security-lock-icon-by-vexels.png"
 
@@ -22,15 +24,46 @@ const OrderPage =()=> {
 
     const confirmOrder =(item)=>{
         //setTime4Accept()
-        if (window.confirm("ยืนยันอาหาร")) {
-            setTimeout(()=>{
-              alert("เก็บข้อมูลสำเร็จ") 
-              GetData()
-            }, 2000)
-            Accept(item) 
-        } else {
-           alert("รายการนี้ยกเลิก")
-        }
+        // if (window.confirm("ยืนยันอาหาร")) {
+        //     setTimeout(()=>{
+        //       alert("เก็บข้อมูลสำเร็จ") 
+        //       GetData()
+        //     }, 2000)
+        //     Accept(item) 
+        // } else {
+        //    alert("รายการนี้ยกเลิก")
+        // }
+        Swal.fire({
+            title: "รายการอาหารนี้ทำเสร็จแล้วใช่หรือไม่",
+            icon: "question",
+            reverseButtons: true,
+            showConfirmButton: true,
+            confirmButtonText: "ยืนยัน",
+            
+            confirmButtonColor: "#008a43",
+            showCancelButton: true,
+            cancelButtonText: "ยังไม่เสร็จ",
+            cancelButtonColor: "",
+        })
+        .then((result)=>{
+            if(result.isConfirmed){
+                Swal.fire({
+                    title: "ยืนยันเรียบร้อย",
+                    icon: "success",
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+                
+                    Accept(item) 
+                    
+                    setTimeout(()=>{
+                        GetData()
+                    }, 1600)
+            }
+            else{
+
+            }
+        })
     }
 
     const Accept =(item)=>{
@@ -101,9 +134,14 @@ const OrderPage =()=> {
 
     }
 
+    const ClockTik =()=> {
+        setClockNow(moment().format('HH:mm:ss'))
+      }
+
     useEffect(()=>{
         GetData()
         GetKey()
+        setInterval(ClockTik, 2000)
         console.log(ActiveKey)
         //ttt ()
     }, [])
@@ -113,11 +151,6 @@ const OrderPage =()=> {
             setAuth(true)
         }
     }, [PIN])
-
-    setInterval(()=>{
-        GetData()
-        //GetActiveKeyFunction()
-    }, 600000)
     
 
     return (
@@ -126,11 +159,11 @@ const OrderPage =()=> {
             <div className='container-fluid py-2'style={{height: "auto", background: "#3f7db5", color: "white"}} >
                 <div className="row">
                     <div className="col-8 pt-2">
-                        <h1>Order <h3>วันที่ {timeStamp}</h3> </h1>
+                        <h1>Order <h3>วันที่ {timeStamp} {ClockNow}</h3> </h1>
                         
                     </div>
 
-                    {Auth==!false?
+                    {Auth==false?
                         (<>
                             <div className="col-2 pt-1">
                                 <div className="card shadow mx-3" onClick={()=>GetData()} style={{height: "90%", width: "80%", cursor: "pointer", color: "black"}}>
@@ -154,7 +187,7 @@ const OrderPage =()=> {
                 </div>
             </div>
 
-            {Auth==false?
+            {Auth==!false?
             (<div className='container-fluid mt-2 text-center' style={{height: "85vh"}}>
                 <img src={LockPic} style={{ marginTop: "1%" }}/><br/>
 
@@ -188,7 +221,7 @@ const OrderPage =()=> {
                                                         <h4>โต๊ะที่: {item.TableNumber}</h4> 
                                                     </div>
                                                     <div className="col text-right">
-                                                        <h4>{item.EatStatus=="Store"? "กินที่ร้าน":"สั่งกลับบ้าน"}</h4> 
+                                                        <h4>{item.EatStatus=="Store"? "ทานที่ร้าน":"สั่งกลับบ้าน"}</h4> 
                                                     </div>
                                                     
                                                 </div>

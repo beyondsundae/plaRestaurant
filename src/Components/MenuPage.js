@@ -3,15 +3,15 @@ import axios from 'axios'
 import Card from 'react-bootstrap/Card'
 import Swal from 'sweetalert2'
 import { queries } from '@testing-library/react'
-
+import moment from 'moment';
 
 const MenuPage =(props)=> {
 
     var dateFormat = require('dateformat');
     var now = new Date();
     const timeStamp =  dateFormat(now, "ddd dd-mm-yyyy, HH:MM:ss")
-    const timeNow =  dateFormat(now, "HH:MM")
-
+    const [ClockNow, setClockNow] = useState(moment().format('HH:mm:ss'));
+    
     const [Page, setPage] = useState("first")
 
     const [Menu, setMenu] = useState([])
@@ -35,7 +35,11 @@ const MenuPage =(props)=> {
             setDataOrder(result)
         })
         .catch((err)=>{
-            alert(err)
+            Swal.fire({
+                title: "Error",
+                icon: 'warning',
+                text: err
+            })
         })
     }
 
@@ -46,7 +50,11 @@ const MenuPage =(props)=> {
             setDrink(result)
         })
         .catch((err)=>{
-            alert(err)
+            Swal.fire({
+                title: "Error",
+                icon: 'warning',
+                text: err
+            })
         })
 
         axios.get('http://localhost:4000/IslamFood')
@@ -56,7 +64,11 @@ const MenuPage =(props)=> {
             setIslamFood(result)
         })
         .catch((err)=>{
-            alert(err)
+            Swal.fire({
+                title: "Error",
+                icon: 'warning',
+                text: err
+            })
         })
 
         axios.get('http://localhost:4000/BuddhFood')
@@ -66,7 +78,11 @@ const MenuPage =(props)=> {
             setBuddhFood(result)
         })
         .catch((err)=>{
-            alert(err)
+            Swal.fire({
+                title: "Error",
+                icon: 'warning',
+                text: err
+            })
         })
        
     }
@@ -352,25 +368,31 @@ const MenuPage =(props)=> {
                 Swal.fire({
                     title: "ต้องการ'ยืนยัน'รายการทั้งหมดใช่หรือไม่",
                     icon:"question",
-                    showConfirmButton:true,
-                    confirmButtonColor:"",
+                    showConfirmButton: true,
+                    confirmButtonColor:"#008a43",
                     confirmButtonText: "ยืนยัน",
 
                     showCancelButton:true,
-                    confirmButtonColor: "",
-                    confirmButtonText: "กลับไปทำต่อ"
+                    cancelButtonColor: "",
+                    cancelButtonText: "กลับไปทำต่อ",
+                    reverseButtons: true
                     
                 })
                 .then((result)=>{
                     if(result.isConfirmed){
                         Swal.fire({
-                            
+                            title: "ส่งรายการอาหารเรียบร้อย",
+                            icon: "success",
+                            showConfirmButton: false,
+                            timer: 1500
                         })
+                        .then(()=>submitOrder())
                     }
                     else {
                         
                     }
                 })
+                
             }else{
                 Swal.fire({
                     title: "กรุณาเลือกรายการอาหารก่อน", 
@@ -406,7 +428,6 @@ const MenuPage =(props)=> {
             console.log(err)
         })
             setTimeout(()=>{
-                alert("สั่งอาหารสำเร็จ")
                 goBackALLStatus()
                 setOrder([])
 
@@ -484,12 +505,17 @@ const MenuPage =(props)=> {
         alert(props.TableNumber)
     }
 
+    const ClockTik =()=> {
+        setClockNow(moment().format('HH:mm:ss'))
+      }
+
     //Get Menu มาเก็บไว้ใน Arr ของเเต่ละชนิดก่อน
     useEffect(()=>{
         EatatStore()
         GetDataOrder()
         GetDataMenu()
-       
+        setInterval(ClockTik, 2000)
+        
     }, [])
 
     //set เมนูตอนเเรกให้เป็นอาหารบุดดุ
@@ -515,7 +541,7 @@ const MenuPage =(props)=> {
     }, [Order])
 
     const Time =()=>{
-        return <h3>{timeNow}</h3>
+        return <h3>{ClockNow}</h3>
     }
 
 
@@ -539,13 +565,13 @@ const MenuPage =(props)=> {
                             </div>
                         </div>
 
-                        <div className="col-11">
+                        <div className="col-10">
                             <button className='btn btn-info mx-2' onClick={()=>ChangeBuddhFood()}>อาหาร</button>
                             <button className='btn btn-info mx-2' onClick={()=>ChangeIslamFood()}>ของทานเล่น</button>
                             <button className='btn btn-info mx-2' onClick={()=>ChangeDrink()}>เครื่องดื่ม</button>
                         </div>
                         
-                        <div className="col-1 pb-2">
+                        <div className="col-2 pb-2 pl-5">
                             {Time()}
                         </div>
                         
