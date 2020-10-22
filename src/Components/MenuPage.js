@@ -571,7 +571,7 @@ const MenuPage =(props)=> {
                             <button className='btn btn-info mx-2' onClick={()=>ChangeDrink()}>เครื่องดื่ม</button>
                         </div>
                         
-                        <div className="col-2 pb-2 pl-5">
+                        <div className="col-2 pb-2 pr-5 text-right">
                             {Time()}
                         </div>
                         

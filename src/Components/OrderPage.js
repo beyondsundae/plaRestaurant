@@ -142,6 +142,7 @@ const OrderPage =()=> {
         GetData()
         GetKey()
         setInterval(ClockTik, 2000)
+        setInterval(GetData, 4000)
         console.log(ActiveKey)
         //ttt ()
     }, [])
@@ -166,7 +167,7 @@ const OrderPage =()=> {
                     {Auth==false?
                         (<>
                             <div className="col-2 pt-1">
-                                <div className="card shadow mx-3" onClick={()=>GetData()} style={{height: "90%", width: "80%", cursor: "pointer", color: "black"}}>
+                                <div className="card shadow mx-3" onClick={()=>window.location.reload()} style={{height: "90%", width: "80%", cursor: "pointer", color: "black"}}>
                                     <div className= 'card-body'>
                                         <h3>รีเฟรชข้อมูล</h3>
                                     </div>
