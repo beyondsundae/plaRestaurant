@@ -1,9 +1,20 @@
 import React, {useState, useEffect} from 'react'
 import axios from 'axios'
-import Card from 'react-bootstrap/Card'
+//import Card from 'react-bootstrap/Card'
 import Swal from 'sweetalert2'
 import { queries } from '@testing-library/react'
 import moment from 'moment';
+
+import styled from 'styled-components';
+
+import { Button, Card } from 'antd';
+import 'antd/dist/antd.css'
+
+import BaconOrange from "../Pics/BaconOrange.gif"
+import loadfood from "../Pics/loadfood.gif"
+import cook from "../Pics/cook.gif"
+import cook2 from "../Pics/cook2.gif"
+import menu from "../Pics/menu.gif"
 
 const MenuPage =(props)=> {
 
@@ -17,6 +28,7 @@ const MenuPage =(props)=> {
     const [Menu, setMenu] = useState([])
     const [Order, setOrder] = useState([])
     const [OrderTotal, setOrdertotal] = useState(0)
+    const [AmountTotal, setAmountTotal] = useState(0)
 
     const [DataOrder, setDataOrder] = useState([])
 
@@ -143,35 +155,35 @@ const MenuPage =(props)=> {
         if(item.status == "NoAdded"){
                 if(item.nation == "Buddh"){
                     return(
-                        <button className='btn btn-success'  
+                        <button className='btn btn-dark' style={{borderRadius: "0px"}}
                             // style={{marginRight: "-100px", marginLeft: '100px'}}
                             onClick={()=>{AddBuddhFirst(item, index)}}>
-                        Add
+                        เพิ่ม
                         </button>
                         )  
                 } else if(item.nation == "Islam"){
                     return(
-                        <button className='btn btn-danger'  
+                        <button className='btn btn-dark' style={{borderRadius: "0px"}}
                             // style={{marginRight: "-100px", marginLeft: '100px'}}
                             onClick={()=>AddIslamFirst(item, index)}>
-                        Add
+                        เพิ่ม
                         </button>
                     )
                 } else if(item.nation == "drink"){
                     return(
-                        <button className='btn btn-warning'  
+                        <button className='btn btn-dark' style={{borderRadius: "0px"}}
                             // style={{marginRight: "-100px", marginLeft: '100px'}}
                             onClick={()=>AddDrinkfirst(item, index)}>
-                        Add
+                        เพิ่ม
                         </button>
                     )
                 }
         } else {
             return(
-            <button className='btn btn-primary'  
+            <button className='btn btn-outline-dark' style={{borderRadius: "0px"}}
                 // style={{marginRight: "-100px", marginLeft: '100px'}}
                 onClick={()=>addAmount(item, index)}>
-            Add More...
+            เพิ่มอีก . . . 
             </button>
             )
         }
@@ -344,6 +356,16 @@ const MenuPage =(props)=> {
         setOrdertotal(totalVal)
     }
 
+    /***************************** Sum total amount *****************************/
+    const amount =()=>{
+        let totalAmount = 0
+        Order.map((item)=>{
+            return totalAmount += item.amount
+        })
+        console.log("Amount", totalAmount)
+        setAmountTotal(totalAmount)
+    }
+
     /***************************** Toggle Status for setState *****************************/
     const EatatStore =()=>{
         setEatStatus("Store")
@@ -501,13 +523,20 @@ const MenuPage =(props)=> {
         //settempOrder(temp)
     }
 
-    const cancelorder =()=>{
-        alert(props.TableNumber)
-    }
-
     const ClockTik =()=> {
         setClockNow(moment().format('HH:mm:ss'))
       }
+
+    /***************************** styled-components *****************************/
+    const Titleh3 = styled.h3`
+        color: white;
+        `
+    const Titleh1 = styled.h1`
+        color: white;
+        `
+    const Button = styled.button`
+        border-radius: 0px
+        `    
 
     //Get Menu มาเก็บไว้ใน Arr ของเเต่ละชนิดก่อน
     useEffect(()=>{
@@ -515,11 +544,9 @@ const MenuPage =(props)=> {
         GetDataOrder()
         GetDataMenu()
         setInterval(ClockTik, 2000)
-        
     }, [])
 
     //set เมนูตอนเเรกให้เป็นอาหารบุดดุ
-    
     useEffect(()=>{
         ChangeIslamFood()
     },[IslamFood])
@@ -538,22 +565,20 @@ const MenuPage =(props)=> {
         console.log("Menu ที่มี", Menu)
         //เเสดงราคาทุหครังที่มีออเดอร์เข้ามา
         total()
+        amount()
     }, [Order])
-
-    const Time =()=>{
-        return <h3>{ClockNow}</h3>
-    }
 
 
     return (
-        <div className='MenuPage'>
+        <div className='MenuPage' >
          
             {Page == "first"?
             (<>
-                <div className="container-fluid" style={{height: "auto", background: "#3f7db5", color: "white"}}>
-                    <div className="row">
-                        <div className="col-10 pt-2">
-                            <h1>เมนูอาหาร โต๊ะที่ {props.TableNumber}</h1>
+                <div className="container-fluid" style={{height: "auto", background: "#3f7db5"}}>
+                    <div className="row" >
+                        <div className="col-10 pt-2 " >
+                            <Titleh1>เมนูอาหาร โต๊ะที่ {props.TableNumber}</Titleh1>
+                            
                         </div>
 
                         <div className="col-2 pt-1">
@@ -566,18 +591,19 @@ const MenuPage =(props)=> {
                         </div>
 
                         <div className="col-10">
-                            <button className='btn btn-info mx-2' onClick={()=>ChangeBuddhFood()}>อาหาร</button>
-                            <button className='btn btn-info mx-2' onClick={()=>ChangeIslamFood()}>ของทานเล่น</button>
-                            <button className='btn btn-info mx-2' onClick={()=>ChangeDrink()}>เครื่องดื่ม</button>
+                            <button className='btn btn-info mx-2' onClick={()=>ChangeBuddhFood()} style={{borderRadius: "0px"}}>อาหาร</button>
+                            <button className='btn btn-info mx-2' onClick={()=>ChangeIslamFood()} style={{borderRadius: "0px"}}>ของทานเล่น</button>
+                            <button className='btn btn-info mx-2' onClick={()=>ChangeDrink()} style={{borderRadius: "0px"}}>เครื่องดื่ม</button>
                         </div>
-                        
                         <div className="col-2 pb-2 pr-5 text-right">
-                            {Time()}
+                            <Titleh3>{ClockNow}</Titleh3>
+                            
                         </div>
-                        
                     </div>
                 </div>
-
+                
+                {/* ***************************** Menu ***************************** */}
+                
                 <div className="container-fluid"  style={{height: "85vh"}}>
                     <div className="row" >
                         <div className="col-8"  style={{height: "85vh"}}>
@@ -585,18 +611,19 @@ const MenuPage =(props)=> {
                             {Menu.map((item, index)=>{
                                 return(
                                
-                                <div className="card shadow" key={index} style={{width: "18em", maxHeight: "28em", margin: "5px"}}>
+                                <div className="card shadow" key={index} style={{width: "24em", maxHeight: "32em", margin: "5px", color: "#4f4f4f"}}>
                                     <div className="text-center">
                                         <img class="card-img-top" src="https://i.pinimg.com/564x/a5/34/59/a53459aa45fb7f89982c361a88d77737.jpg" style={{maxWidth: "270px"}}/>
                                     </div>
                                      
-                                    <div className="card-body">
-                                        <h4 className="card-title">
+                                    <div className="card-body bg-light">
+                                        <h5 className="card-title ">
                                             {item.name}
-                                        </h4>
-                                        <p>ราคา: {item.price} .-</p>
+                                        </h5>
+                                        <h3><strong>ราคา: {item.price} .-</strong></h3>
                                         <div className="text-right">
                                             <AddFoodButton item={item} index={index}/>
+                                            {/* <Button type="primary" >Primary Button</Button> */}
                                         </div>
                                         
                                     </div>
@@ -604,46 +631,82 @@ const MenuPage =(props)=> {
                             )})}
                             </div>
                         </div>
+                        
+                        {/* ***************************** Order ***************************** */}
 
                         <div className="col-4"  style={{height: "auto"}}>
                             <div className="card mx-auto" style={{height: "100% "}}>
-                                <div className="card-header">
-                                    รายการที่สั่ง: 
+                                <div className="card-header pb-1" >
+                                    <h5>รายการที่สั่ง:</h5>
                                 </div>
-
-                                <div className="card-body" style={{ padding: "5px"}}>
-                                <table class="table">
-                            <thead class="thead-dark">
-                                <tr>
-                                <th scope="col">อาหาร</th>
-                                <th scope="col">จำนวน</th>
-                                <th scope="col">ราคา</th>
-                                <th></th>
-                                {/*<th></th>*/}
-                                </tr>
-                            </thead>
-                        
-                            <tbody>
-                            {Order.map((item, index)=>{
-                                return(
-                                <tr key={index}>
-                                <th>{item.name}</th>
-                                <th>
-                                    <button className="mx-2 btn-dark" onClick={()=>minusAmount(item, index)}>-</button>
-                                        {item.amount}
-                                    <button className="mx-2 btn-dark" onClick={()=>addAmount(item, index)}>+</button></th>
-                                <th>{item.price * item.amount} </th>
-                                <th><button className="btn-dark ml-2" onClick={()=>removeOrder(item, index)}>ล้าง</button></th>
-                                </tr>
-                            )})}
-                            </tbody>
-                            </table>
+                                <div  >
+                                    <div className="card-body border border-danger" style={{ padding: "5px"}}>
+                                        <table class="table">
+                                            <thead class="thead-dark">
+                                                <tr>
+                                                <td>
+                                                    <table>
+                                                        <tr>
+                                                            <th scope="col">อาหาร</th>
+                                                            <th scope="col">จำนวน</th>
+                                                            <th scope="col">ราคา</th>
+                                                            <th></th>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                                
+                                                {/*<td></td>*/}
+                                                </tr>
+                                            </thead>
+                                            <div style={{height: "60vh", overflow: "auto"}}>
+                                            <table>
+{Order.length == "0"?
+                                        (<>
+                                            <tbody className="">
+                                                <td colspan="4" className= "text-center">
+                                                    <h2>ยังไม่มีรายการอาหารที่สั่ง</h2> 
+                                                    <img src={BaconOrange}/>
+                                                    <h2>เลือกอาหารได้เลย !</h2> 
+                                                </td>
+                                            </tbody>       
+                                        </>)
+                                        :(
+                                        <>
+                                            <tbody style={{border: "1px blue solid" }}>
+                                                {Order.map((item, index)=>{
+                                                    return(
+                                                        <tr key={index}>
+                                                        <td><h3>{item.name}</h3></td>
+                                                        <td>
+                                                            <Button className="mx-2 btn btn-danger" onClick={()=>minusAmount(item, index)}>-</Button>
+                                                                {item.amount}
+                                                            <Button className="mx-2 btn btn-dark" onClick={()=>addAmount(item, index)}>+</Button>
+                                                        </td>
+                                                        <td>{item.price * item.amount} </td>
+                                                        <td><Button className="ml-2 btn btn-dark" onClick={()=>removeOrder(item, index)}>ล้าง</Button></td>
+                                                        </tr>
+                                                )})}
+                                            </tbody>
+                                        </>
+                                        )}
+                                            </table>  
+                                            </div>
+                                            
+                                        
+                                        </table>
                                 </div>
+                            </div>
 
                                 <div className="card-footer text-right"style={{padding: "1px"}}>
                                     <div className='row' >
-                                        <div className="col-9">
-                                            <strong>ราคารวม: </strong>
+                                        <div className="col-3 pt-1">
+                                            <strong><h5>จำนวนรายการ: </h5></strong>
+                                        </div>
+                                        <div className="col mr-5 text-center">
+                                            <h3>{AmountTotal}</h3>
+                                        </div>
+                                        <div className="col-2 pt-1">
+                                            <strong><h5>ราคารวม: </h5></strong>
                                         </div>
                                         <div className="col mr-5">
                                             <h3>{OrderTotal} .-</h3>
@@ -653,19 +716,19 @@ const MenuPage =(props)=> {
                                 </div>
                                 <div className="row mt-2">
                                     <div className="offset-1 col-5">
-                                        <button className={EatColor2} onClick={()=>EatatStore()}>ทานที่ร้าน</button>
+                                        <button className={EatColor2} onClick={()=>EatatStore()} style={{borderRadius: "0px"}}>ทานที่ร้าน</button>
                                     </div>
                                     <div className="col-5">
-                                        <button className={EatColor1} onClick={()=>EatatHome()}>สั่งกลับบ้าน</button>
+                                        <button className={EatColor1} onClick={()=>EatatHome()} style={{borderRadius: "0px"}}>สั่งกลับบ้าน</button>
                                     </div>
                                 </div>
                                 
                                 <div className="row">
                                     <div className="col-3" style={{paddingRight : 0 }}>
-                                        <button className="btn btn-danger btn-lg mt-3 " style={{width: "100%"}} onClick={()=>cancelOrder()}>ยกเลิก</button>
+                                        <button className="btn btn-danger btn-lg mt-3 " style={{width: "100%", borderRadius: "0px"}} onClick={()=>cancelOrder()}>ยกเลิก</button>
                                     </div>
                                     <div className="col-9">
-                                        <button className="btn btn-success btn-lg  mt-3" style={{width: "100%"}} onClick={()=>confirmSubmit()}>สั่งอาหาร</button>
+                                        <button className="btn btn-success btn-lg  mt-3" style={{width: "100%", borderRadius: "0px"}} onClick={()=>confirmSubmit()}>สั่งอาหาร</button>
                                     </div>
                                 </div>
                                 
@@ -678,7 +741,7 @@ const MenuPage =(props)=> {
                 <div className="container-fluid" style={{height: "auto", background: "#3f7db5", color: "white"}}>
                     <div className="row">
                         <div className="col-10 pt-2">
-                            <h1>รายการอาหารที่สั่ง</h1>
+                            <Titleh1>รายการอาหารที่สั่ง</Titleh1>
                         </div>
 
                         <div className="col-2 pt-1">
@@ -694,16 +757,18 @@ const MenuPage =(props)=> {
                             
                         </div>
                         <div className="col-1">
-                            {Time()}
+                            <Titleh3>{ClockNow}</Titleh3>
                         </div>
                         
                     </div>
                 </div>
 
-                <div className="container-fluid"  style={{height: "85vh", background: 'rgb(236, 240, 222)'}}>
+                {/* ***************************** Order Page ***************************** */}
+
+                <div className="container-fluid"  style={{height: "85vh", background: 'rgba(249, 237, 239'}}>
                     <div className="row mt-2">
-                        <div className="col">
-                            <img src="https://cdn.dribbble.com/users/572419/screenshots/4646056/drr.gif"/>
+                        <div className="col text-center pt-5 ">
+                            <img src={cook2}/>
                         </div>
                         <div className="col">
                             <div className="card shadow mx-2"  style={{cursor: "pointer", color: "black", maxHeight: '75vh', overflow: "scroll"}}>
@@ -713,20 +778,19 @@ const MenuPage =(props)=> {
                                             item.statusCook === "NotDone"?
                                                 item.TableNumber == props.TableNumber?
                                             (<div>
-                                                <Card>
-                                                    <Card.Header >
+                                                    <Card className="bg-dark" style={{borderRadius: "2%"}}>
                                                             <div className="row">
                                                                 <div className="col-4" >
-                                                                    <h4>โต๊ะที่: {item.TableNumber}</h4> 
+                                                                    <Titleh3>โต๊ะที่: {item.TableNumber}</Titleh3> 
                                                                 </div>
                                                                 <div className="col text-right">
-                                                                    <h4>{item.EatStatus=="Store"? "กินที่ร้าน":"สั่งกลับบ้าน"}</h4> 
+                                                                    <Titleh3>{item.EatStatus=="Store"? "กินที่ร้าน":"สั่งกลับบ้าน"}</Titleh3> 
                                                                 </div>
                                                                 
                                                             </div>
                                                             
-                                                    </Card.Header>
-                                                        <Card.Body>
+                                                    </Card>
+                                                        <Card className="mb-3 shadow" style={{borderRadius: "0% 0% 2% 2%"}}>
                                                             <strong>เวลาที่สั่ง: </strong> {item.Timestamp} <br/>
                                                                 <hr/>
                                                             <strong>รายการที่สั่ง</strong><br/>
@@ -758,8 +822,7 @@ const MenuPage =(props)=> {
                                                                     {/*<button className="btn btn-primary btn-lg" onClick={()=>cancelorder(item)}>ตรวจสอบ</button>*/}
                                                                 </div>
                                                             </div>
-                                                        </Card.Body>
-                                                </Card>
+                                                        </Card>
                                             </div>):null
                                             :null
                                         )
@@ -775,5 +838,8 @@ const MenuPage =(props)=> {
         </div>
     )
 }
+
+
+
 
 export default MenuPage

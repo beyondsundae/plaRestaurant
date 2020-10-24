@@ -6,6 +6,8 @@ import Card from 'react-bootstrap/Card'
 import Swal from 'sweetalert2'
 import moment from 'moment';
 
+import cook from "../Pics/cook.gif"
+
 const OrderPage =()=> {
 
     var dateFormat = require('dateformat');
