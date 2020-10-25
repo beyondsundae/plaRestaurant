@@ -639,63 +639,51 @@ const MenuPage =(props)=> {
                                 <div className="card-header pb-1" >
                                     <h5>รายการที่สั่ง:</h5>
                                 </div>
-                                <div  >
-                                    <div className="card-body border border-danger" style={{ padding: "5px"}}>
-                                        <table class="table">
-                                            <thead class="thead-dark">
-                                                <tr>
-                                                <td>
-                                                    <table>
-                                                        <tr>
-                                                            <th scope="col">อาหาร</th>
-                                                            <th scope="col">จำนวน</th>
-                                                            <th scope="col">ราคา</th>
-                                                            <th></th>
-                                                        </tr>
-                                                    </table>
-                                                </td>
-                                                
-                                                {/*<td></td>*/}
-                                                </tr>
-                                            </thead>
-                                            <div style={{height: "60vh", overflow: "auto"}}>
-                                            <table>
-{Order.length == "0"?
-                                        (<>
-                                            <tbody className="">
-                                                <td colspan="4" className= "text-center">
-                                                    <h2>ยังไม่มีรายการอาหารที่สั่ง</h2> 
-                                                    <img src={BaconOrange}/>
-                                                    <h2>เลือกอาหารได้เลย !</h2> 
-                                                </td>
-                                            </tbody>       
-                                        </>)
-                                        :(
-                                        <>
-                                            <tbody style={{border: "1px blue solid" }}>
-                                                {Order.map((item, index)=>{
-                                                    return(
-                                                        <tr key={index}>
-                                                        <td><h3>{item.name}</h3></td>
-                                                        <td>
-                                                            <Button className="mx-2 btn btn-danger" onClick={()=>minusAmount(item, index)}>-</Button>
-                                                                {item.amount}
-                                                            <Button className="mx-2 btn btn-dark" onClick={()=>addAmount(item, index)}>+</Button>
-                                                        </td>
-                                                        <td>{item.price * item.amount} </td>
-                                                        <td><Button className="ml-2 btn btn-dark" onClick={()=>removeOrder(item, index)}>ล้าง</Button></td>
-                                                        </tr>
-                                                )})}
-                                            </tbody>
-                                        </>
-                                        )}
-                                            </table>  
-                                            </div>
-                                            
-                                        
-                                        </table>
+                                    <table class="table">
+                                        <thead class="thead-dark">
+                                            <tr>
+                                                <th scope="col" className="">อาหาร</th>
+                                                <th scope="col" className="pl-5 text-center">จำนวน</th>
+                                                <th scope="col" className="text-center">ราคา</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+
+                                <div className="card-body " style={{ padding: "5px" , height: "50px", overflow: "auto"}}>
+                                    <table class="table">
+
+                                {Order.length == "0"?
+                                    (<>
+                                        <tbody>
+                                            <td colspan="4" className= "text-center">
+                                                <h2>ยังไม่มีรายการอาหารที่สั่ง</h2> 
+                                                <img src={BaconOrange}/>
+                                                <h2>เลือกอาหารได้เลย !</h2> 
+                                            </td>
+                                        </tbody>       
+                                    </>)
+                                    :(
+                                    <>
+                                        <tbody>
+                                            {Order.map((item, index)=>{
+                                                return(
+                                                    <tr key={index}>
+                                                    <td><h4>{item.name}</h4></td>
+                                                    <td>
+                                                        <Button className="mx-2 btn btn-danger" onClick={()=>minusAmount(item, index)}>-</Button>
+                                                            {item.amount}
+                                                        <Button className="mx-2 btn btn-dark" onClick={()=>addAmount(item, index)}>+</Button>
+                                                    </td>
+                                                    <td><h4>{item.price * item.amount}</h4></td>
+                                                    <td><Button className="ml-2 btn btn-dark" onClick={()=>removeOrder(item, index)}>ล้าง</Button></td>
+                                                    </tr>
+                                            )})}
+                                        </tbody>
+                                    </>
+                                    )}
+                                    </table>  
                                 </div>
-                            </div>
 
                                 <div className="card-footer text-right"style={{padding: "1px"}}>
                                     <div className='row' >
