@@ -535,7 +535,7 @@ const MenuPage =(props)=> {
         color: white;
         `
     const Button = styled.button`
-        border-radius: 0px
+        border-radius: 0px;
         `    
 
     //Get Menu มาเก็บไว้ใน Arr ของเเต่ละชนิดก่อน
@@ -574,7 +574,7 @@ const MenuPage =(props)=> {
          
             {Page == "first"?
             (<>
-                <div className="container-fluid" style={{height: "auto", background: "#3f7db5"}}>
+                <div className="container-fluid" style={{height: "auto", background: "#6398c7"}}>
                     <div className="row" >
                         <div className="col-10 pt-2 " >
                             <Titleh1>เมนูอาหาร โต๊ะที่ {props.TableNumber}</Titleh1>
@@ -691,42 +691,41 @@ const MenuPage =(props)=> {
                                             <strong><h5>จำนวนรายการ: </h5></strong>
                                         </div>
                                         <div className="col mr-5 text-center">
-                                            <h3>{AmountTotal}</h3>
+                                            <h4>{AmountTotal}</h4>
                                         </div>
                                         <div className="col-2 pt-1">
                                             <strong><h5>ราคารวม: </h5></strong>
                                         </div>
                                         <div className="col mr-5">
-                                            <h3>{OrderTotal} .-</h3>
+                                            <h2>{OrderTotal} .-</h2>
                                         </div>
                                     </div>
-                                    
                                 </div>
+
                                 <div className="row mt-2">
                                     <div className="offset-1 col-5">
-                                        <button className={EatColor2} onClick={()=>EatatStore()} style={{borderRadius: "0px"}}>ทานที่ร้าน</button>
+                                        <Button className={EatColor2} onClick={()=>EatatStore()}>ทานที่ร้าน</Button>
                                     </div>
                                     <div className="col-5">
-                                        <button className={EatColor1} onClick={()=>EatatHome()} style={{borderRadius: "0px"}}>สั่งกลับบ้าน</button>
+                                        <Button className={EatColor1} onClick={()=>EatatHome()}>สั่งกลับบ้าน</Button>
                                     </div>
                                 </div>
                                 
-                                <div className="row">
+                                <div className="row mb-4">
                                     <div className="col-3" style={{paddingRight : 0 }}>
-                                        <button className="btn btn-danger btn-lg mt-3 " style={{width: "100%", borderRadius: "0px"}} onClick={()=>cancelOrder()}>ยกเลิก</button>
+                                        <Button className="btn btn-danger btn-lg mt-3 " style={{width: "100%"}} onClick={()=>cancelOrder()}>ยกเลิก</Button>
                                     </div>
                                     <div className="col-9">
-                                        <button className="btn btn-success btn-lg  mt-3" style={{width: "100%", borderRadius: "0px"}} onClick={()=>confirmSubmit()}>สั่งอาหาร</button>
+                                        <Button className="btn btn-success btn-lg  mt-3" style={{width: "100%"}} onClick={()=>confirmSubmit()}>สั่งอาหาร</Button>
                                     </div>
                                 </div>
-                                
                             </div>
                         </div>
                     </div>
                 </div>
             </>)
             :(<>
-                <div className="container-fluid" style={{height: "auto", background: "#3f7db5", color: "white"}}>
+                <div className="container-fluid" style={{height: "auto", background: "#6398c7", color: "white"}}>
                     <div className="row">
                         <div className="col-10 pt-2">
                             <Titleh1>รายการอาหารที่สั่ง</Titleh1>
