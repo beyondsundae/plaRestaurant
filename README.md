@@ -31,7 +31,23 @@ Order Page
 
 Chief Page
 - Showing **customer's food ordered** from all tables.
--  CMS Backoffice *future work*
+-  CMS Backoffice *( future work )*
+
+# Technology
+
+โปรเจคนี้เป็นการศึกษาเทคโนโลยีที่สนใจ ได้แก่
+
+ - **React Hooks**
+ - **React Router**
+ - **NodeJS**
+ - **ExpressJS**
+ - **mySQL**
+ - **Nodemon**
+___
+ - **Sweet Alert**
+ - **moment.js**
+ - **Axios**
+ - **Ant Design**
 
 # How to use
 **Terminal 1**
